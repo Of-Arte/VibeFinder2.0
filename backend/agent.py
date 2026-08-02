@@ -4,7 +4,7 @@ Unified Gemini agent layer for VibeFinder 2.0.
 Three independent agent functions built on the google-generativeai SDK:
   1. classify_tracks_batch  — dynamically infers audio features for a track pool
   2. translate_artists_to_prefs — infers the user's target vibe from their picks
-  3. generate_dj_intro       — writes a short radio-DJ intro for the playlist
+  3. generate_dj_intro — writes a short radio-DJ intro for the playlist
 
 CRITICAL: classification is BATCHED into a single API call to stay well under
 Gemini's 15 RPM free-tier limit. Never classify songs in a loop.
