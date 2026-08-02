@@ -18,6 +18,8 @@ class Song:
     valence: float
     danceability: float
     acousticness: float
+    cover_url: str = ""
+    preview_url: str = ""
 
 @dataclass
 class UserProfile:
@@ -50,6 +52,8 @@ class Recommender:
             "valence": song.valence,
             "danceability": song.danceability,
             "acousticness": song.acousticness,
+            "cover_url": song.cover_url,
+            "preview_url": song.preview_url,
         }
 
     def _user_to_dict(self, user: UserProfile) -> Dict:

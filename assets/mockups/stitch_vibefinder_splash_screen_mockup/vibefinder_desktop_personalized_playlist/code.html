@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VibeFinder - Your Playlist</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#72fe8f",
+                    "surface-container-highest": "#353534",
+                    "surface-container-lowest": "#0e0e0e",
+                    "surface-variant": "#353534",
+                    "surface-bright": "#393939",
+                    "on-primary-fixed-variant": "#005320",
+                    "on-background": "#e5e2e1",
+                    "on-secondary": "#00382e",
+                    "surface": "#131313",
+                    "tertiary-container": "#ff767b",
+                    "primary-fixed-dim": "#53e076",
+                    "surface-tint": "#53e076",
+                    "on-tertiary": "#680114",
+                    "secondary-fixed-dim": "#62dac0",
+                    "on-error": "#690005",
+                    "inverse-surface": "#e5e2e1",
+                    "secondary-container": "#13a38b",
+                    "outline": "#869585",
+                    "surface-container-high": "#2a2a2a",
+                    "tertiary": "#ffb3b3",
+                    "inverse-on-surface": "#313030",
+                    "on-surface": "#e5e2e1",
+                    "on-secondary-container": "#003028",
+                    "on-primary": "#003914",
+                    "background": "#121212",
+                    "on-primary-fixed": "#002108",
+                    "secondary-fixed": "#80f7dc",
+                    "on-surface-variant": "#bccbb9",
+                    "primary": "#53e076",
+                    "on-secondary-fixed-variant": "#005144",
+                    "surface-dim": "#131313",
+                    "on-tertiary-fixed": "#400009",
+                    "secondary": "#62dac0",
+                    "tertiary-fixed-dim": "#ffb3b3",
+                    "error": "#ffb4ab",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#1c1b1b",
+                    "on-primary-container": "#004118",
+                    "inverse-primary": "#006e2d",
+                    "tertiary-fixed": "#ffdad9",
+                    "primary-container": "#1db954",
+                    "on-secondary-fixed": "#00201a",
+                    "on-tertiary-fixed-variant": "#881d28",
+                    "on-tertiary-container": "#730a1b",
+                    "error-container": "#93000a",
+                    "outline-variant": "#3d4a3d",
+                    "surface-container": "#201f1f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "16px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "32px",
+                    "xs": "8px",
+                    "sm": "16px",
+                    "xl": "48px",
+                    "gutter-mobile": "12px",
+                    "margin-mobile": "20px",
+                    "base": "4px",
+                    "md": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .music-note-glow {
+            filter: drop-shadow(0 0 8px rgba(83, 224, 118, 0.4));
+        }
+        .custom-info-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #282828;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .custom-info-btn:hover {
+            background-color: #3e3e3e;
+            transform: scale(1.1);
+        }
+        .song-card {
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .song-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen">
+<!-- Main Content Canvas -->
+<main class="w-full max-w-[720px] px-6 md:px-0">
+<!-- Header / Back Action -->
+<div class="mt-[60px]">
+<button aria-label="Go back" class="flex items-center group transition-colors duration-200">
+<span class="material-symbols-outlined text-[#B3B3B3] group-hover:text-primary transition-colors">arrow_back</span>
+</button>
+</div>
+<!-- DJ Intro Card -->
+<section class="mt-lg">
+<div class="bg-[#1e1e1e] rounded-2xl p-md border border-white/5 shadow-xl">
+<div class="flex flex-col gap-xs">
+<span class="material-symbols-outlined text-primary text-[24px] music-note-glow" data-weight="fill">music_note</span>
+<p class="text-[#B3B3B3] italic font-body-md leading-relaxed" style="font-size: 15px;">
+                        Hey vibe-seeker! Your picks scream indie soul with an electronic edge. I've lined up some tracks that'll hit that sweet spot — starting with 'Rooftop Lights' for the dreamy feels.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Playlist Heading -->
+<section class="mt-lg">
+<h1 class="text-white font-bold tracking-tight" style="font-size: 22px;">Your Playlist</h1>
+</section>
+<!-- Song List -->
+<section class="mt-5 flex flex-col gap-[14px] pb-10">
+<!-- Song 1 -->
+<div class="song-card h-[80px] bg-[#1e1e1e] rounded-[12px] flex items-center justify-between px-md border border-white/5 cursor-pointer hover:bg-[#282828]">
+<div class="flex flex-col">
+<span class="text-white font-bold" style="font-size: 17px;">Rooftop Lights</span>
+<span class="text-[#B3B3B3]" style="font-size: 14px;">Indigo Parade</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-[#282828] text-[#727272] px-3 py-1 rounded-full uppercase tracking-wider font-bold" style="font-size: 10px;">INDIE POP</span>
+<button class="custom-info-btn">i</button>
+</div>
+</div>
+<!-- Song 2 -->
+<div class="song-card h-[80px] bg-[#1e1e1e] rounded-[12px] flex items-center justify-between px-md border border-white/5 cursor-pointer hover:bg-[#282828]">
+<div class="flex flex-col">
+<span class="text-white font-bold" style="font-size: 17px;">Sunrise City</span>
+<span class="text-[#B3B3B3]" style="font-size: 14px;">Neon Echo</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-[#282828] text-[#727272] px-3 py-1 rounded-full uppercase tracking-wider font-bold" style="font-size: 10px;">POP</span>
+<button class="custom-info-btn">i</button>
+</div>
+</div>
+<!-- Song 3 (Active/Hover State Default) -->
+<div class="song-card h-[80px] bg-[#282828] rounded-[12px] flex items-center justify-between px-md border border-white/10 cursor-pointer ring-1 ring-white/5">
+<div class="flex flex-col">
+<div class="flex items-center gap-xs">
+<span class="text-white font-bold" style="font-size: 17px;">Midnight Coding</span>
+<span class="material-symbols-outlined text-primary text-[14px]" style="font-variation-settings: 'FILL' 1;">equalizer</span>
+</div>
+<span class="text-[#B3B3B3]" style="font-size: 14px;">LoRoom</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-[#3e3e3e] text-[#B3B3B3] px-3 py-1 rounded-full uppercase tracking-wider font-bold shadow-inner" style="font-size: 10px;">LOFI</span>
+<button class="custom-info-btn">i</button>
+</div>
+</div>
+<!-- Song 4 -->
+<div class="song-card h-[80px] bg-[#1e1e1e] rounded-[12px] flex items-center justify-between px-md border border-white/5 cursor-pointer hover:bg-[#282828]">
+<div class="flex flex-col">
+<span class="text-white font-bold" style="font-size: 17px;">Coffee Shop Stories</span>
+<span class="text-[#B3B3B3]" style="font-size: 14px;">Slow Stereo</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-[#282828] text-[#727272] px-3 py-1 rounded-full uppercase tracking-wider font-bold" style="font-size: 10px;">JAZZ</span>
+<button class="custom-info-btn">i</button>
+</div>
+</div>
+<!-- Song 5 -->
+<div class="song-card h-[80px] bg-[#1e1e1e] rounded-[12px] flex items-center justify-between px-md border border-white/5 cursor-pointer hover:bg-[#282828]">
+<div class="flex flex-col">
+<span class="text-white font-bold" style="font-size: 17px;">Concrete Poetry</span>
+<span class="text-[#B3B3B3]" style="font-size: 14px;">MC Rhyme</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-[#282828] text-[#727272] px-3 py-1 rounded-full uppercase tracking-wider font-bold" style="font-size: 10px;">HIP HOP</span>
+<button class="custom-info-btn">i</button>
+</div>
+</div>
+</section>
+<!-- Footer Action -->
+<footer class="mt-[40px] mb-lg flex justify-center">
+<a class="text-[#B3B3B3] underline hover:text-white transition-colors duration-200" href="#" style="font-size: 14px;">
+                Start Over
+            </a>
+</footer>
+</main>
+<!-- Subtle Background Atmosphere -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden opacity-30">
+<div class="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px]"></div>
+</div>
+<script>
+        // Micro-interactions for the song cards
+        document.querySelectorAll('.song-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Haptic simulation if supported or just visual feedback
+                console.log('Hover on song');
+            });
+            
+            card.addEventListener('click', function() {
+                // Toggle active state for visualization
+                document.querySelectorAll('.song-card').forEach(c => {
+                    c.classList.remove('bg-[#282828]', 'ring-1', 'ring-white/5');
+                    c.classList.add('bg-[#1e1e1e]');
+                });
+                this.classList.add('bg-[#282828]', 'ring-1', 'ring-white/5');
+                this.classList.remove('bg-[#1e1e1e]');
+            });
+        });
+    </script>
+</body></html>

@@ -8,6 +8,17 @@ __pycache__/
 env/
 venv/
 
+# Secrets
+.env
+
+# Runtime cache (regenerated on demand)
+data/track_cache.json
+
+# Node / Vite frontend (Phase 2)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
 # OS files
 .DS_Store
 
@@ -15,3 +26,4 @@ venv/
 .pytest_cache/
 
 project_instructions.md
+handoff.md

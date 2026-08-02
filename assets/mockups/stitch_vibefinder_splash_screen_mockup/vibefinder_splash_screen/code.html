@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VibeFinder Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#003914",
+                    "on-error-container": "#ffdad6",
+                    "outline": "#869585",
+                    "primary": "#53e076",
+                    "primary-fixed": "#72fe8f",
+                    "tertiary": "#ffb3b3",
+                    "on-secondary": "#00382e",
+                    "surface-variant": "#353534",
+                    "on-secondary-fixed": "#00201a",
+                    "surface-container-low": "#1c1b1b",
+                    "on-tertiary-fixed-variant": "#881d28",
+                    "tertiary-fixed-dim": "#ffb3b3",
+                    "inverse-on-surface": "#313030",
+                    "tertiary-fixed": "#ffdad9",
+                    "on-primary-fixed-variant": "#005320",
+                    "on-primary-container": "#004118",
+                    "on-tertiary-fixed": "#400009",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#003028",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed": "#80f7dc",
+                    "secondary-container": "#13a38b",
+                    "surface-container-highest": "#353534",
+                    "on-error": "#690005",
+                    "surface": "#131313",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed-dim": "#53e076",
+                    "tertiary-container": "#ff767b",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary": "#680114",
+                    "secondary": "#62dac0",
+                    "surface-tint": "#53e076",
+                    "outline-variant": "#3d4a3d",
+                    "surface-dim": "#131313",
+                    "surface-bright": "#393939",
+                    "surface-container-lowest": "#0e0e0e",
+                    "surface-container-high": "#2a2a2a",
+                    "background": "#131313",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#62dac0",
+                    "primary-container": "#1db954",
+                    "on-surface-variant": "#bccbb9",
+                    "on-surface": "#e5e2e1",
+                    "inverse-primary": "#006e2d",
+                    "on-primary-fixed": "#002108",
+                    "on-tertiary-container": "#730a1b",
+                    "on-secondary-fixed-variant": "#005144"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter-mobile": "12px",
+                    "margin-mobile": "20px",
+                    "base": "4px",
+                    "xs": "8px",
+                    "md": "24px",
+                    "lg": "32px",
+                    "sm": "16px",
+                    "xl": "48px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        .iphone-canvas {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            position: relative;
+            background-color: #121212;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-shadow {
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-press:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease;
+        }
+    </style>
+</head>
+<body class="dark flex items-center justify-center min-h-screen">
+<!-- Mobile Screen Wrapper (iPhone 15 Pro Dimensions) -->
+<div class="iphone-canvas">
+<!-- Center Content Section -->
+<div class="flex flex-col items-center text-center">
+<!-- Logo Asset -->
+<div class="w-[80px] h-[80px] mb-sm overflow-hidden">
+<img alt="VibeFinder Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLsfS9wZoMvQhmrKQVy1iWKM2HIkqjWUTsSeZEg9l0QUikACX1M_dY8OGcFfLJkDzclZa-m4IMTm6_X6VHGaevKsWuGKm5vxySNXHupGYKwBdTZBVFGrDtOiablyn3pFh2G1X3yOxeGb7vLFt_OOuO1aMz45hgcYJoV3FrX1VwmRzLaMCU6yZTcTrowXhdzgZ68etmOFIAMXJGmYopMEKA_2337KXcaBSGxCnm2qjO1jnnmpNdtiSGYtpF0"/>
+</div>
+<!-- Brand Name -->
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-[#FFFFFF] mb-xs">
+                VibeFinder
+            </h1>
+<!-- Tagline -->
+<p class="font-body-md text-body-md text-[#B3B3B3]">
+                Let's find your vibe.
+            </p>
+</div>
+<!-- Lower Action Section -->
+<div class="mt-xl pt-lg">
+<button class="w-[280px] h-[56px] rounded-full bg-primary-container text-on-primary-container font-body-lg text-body-lg font-bold flex items-center justify-center btn-shadow active-press transition-all duration-200 hover:opacity-90">
+                Get Started
+            </button>
+</div>
+<!-- Decorative Subtle Element (Micro-interaction layer) -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20">
+<div class="w-1 h-1 bg-primary rounded-full animate-ping"></div>
+</div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.querySelector('button');
+            btn.addEventListener('mousedown', () => {
+                // Light haptic feedback simulation
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(10);
+                }
+            });
+        });
+    </script>
+</body></html>

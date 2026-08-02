@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#003914",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "surface-bright": "#393939",
+                    "tertiary-fixed-dim": "#ffb3b3",
+                    "surface-variant": "#353534",
+                    "surface-container-low": "#1c1b1b",
+                    "surface": "#131313",
+                    "surface-tint": "#53e076",
+                    "primary-fixed-dim": "#53e076",
+                    "inverse-primary": "#006e2d",
+                    "outline": "#869585",
+                    "on-error": "#690005",
+                    "tertiary-container": "#ff767b",
+                    "surface-container-high": "#2a2a2a",
+                    "tertiary-fixed": "#ffdad9",
+                    "surface-container-highest": "#353534",
+                    "error": "#ffb4ab",
+                    "surface-dim": "#131313",
+                    "on-secondary-container": "#003028",
+                    "tertiary": "#ffb3b3",
+                    "on-surface": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#005144",
+                    "background": "#131313",
+                    "secondary-container": "#13a38b",
+                    "on-background": "#e5e2e1",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary": "#680114",
+                    "on-primary-fixed-variant": "#005320",
+                    "on-primary-container": "#004118",
+                    "secondary-fixed-dim": "#62dac0",
+                    "surface-container": "#201f1f",
+                    "on-tertiary-container": "#730a1b",
+                    "on-tertiary-fixed-variant": "#881d28",
+                    "on-secondary": "#00382e",
+                    "on-surface-variant": "#bccbb9",
+                    "primary": "#53e076",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#400009",
+                    "secondary": "#62dac0",
+                    "on-secondary-fixed": "#00201a",
+                    "error-container": "#93000a",
+                    "primary-container": "#1db954",
+                    "primary-fixed": "#72fe8f",
+                    "outline-variant": "#3d4a3d",
+                    "secondary-fixed": "#80f7dc",
+                    "on-primary-fixed": "#002108"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "base": "4px",
+                    "gutter-mobile": "12px",
+                    "md": "24px",
+                    "xs": "8px",
+                    "sm": "16px",
+                    "lg": "32px",
+                    "xl": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        .artist-chip {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .artist-chip.selected {
+            background-color: #53e076 !important;
+            border-color: #53e076 !important;
+            color: #003914 !important;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+            transform: scale(1.05);
+        }
+        .btn-active {
+            background-color: #53e076 !important;
+            color: #003914 !important;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+<!-- Mobile Container (iPhone 15 Pro Dimensions) -->
+<main class="relative w-[393px] h-[852px] bg-[#121212] flex flex-col overflow-hidden shadow-2xl">
+<!-- Header: Back Navigation -->
+<header class="pt-[60px] px-margin-mobile flex items-center">
+<button class="material-symbols-outlined text-[#B3B3B3] text-[24px] hover:text-white transition-colors" data-icon="arrow_back">
+                arrow_back
+            </button>
+</header>
+<!-- Headlines -->
+<section class="mt-md text-center px-margin-mobile">
+<h1 class="font-headline-md text-headline-md text-white">Pick 3 or more artists you love</h1>
+<p class="mt-xs text-[#727272] font-label-md text-label-md">This helps your DJ build the perfect playlist</p>
+</section>
+<!-- Artist Grid -->
+<section class="mt-lg px-margin-mobile flex-1 overflow-y-auto hide-scrollbar pb-xl">
+<div class="grid grid-cols-2 gap-3" id="artist-grid">
+<!-- Row 1 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Taylor Swift</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Billie Eilish</button>
+<!-- Row 2 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Kendrick Lamar</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Daft Punk</button>
+<!-- Row 3 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Radiohead</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Miles Davis</button>
+<!-- Row 4 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Iron Maiden</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Bob Marley</button>
+<!-- Row 5 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Adele</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">The Weeknd</button>
+<!-- Row 6 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Fleet Foxes</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Ravi Shankar</button>
+<!-- Row 7 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Nujabes</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Beethoven</button>
+<!-- Row 8 -->
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Arctic Monkeys</button>
+<button class="artist-chip h-[48px] px-4 flex items-center justify-center rounded-full bg-[#1e1e1e] border border-[#333333] text-[#B3B3B3] font-label-md text-label-md" onclick="toggleArtist(this)">Calvin Harris</button>
+</div>
+</section>
+<!-- Sticky Bottom Gradient -->
+<div class="absolute bottom-0 left-0 w-full h-[120px] pointer-events-none bg-gradient-to-t from-[#121212] via-[#121212]/80 to-transparent"></div>
+<!-- Footer Button -->
+<footer class="absolute bottom-[32px] left-1/2 -translate-x-1/2 w-full flex justify-center z-10">
+<button class="w-[280px] h-[52px] rounded-full bg-[#333333] text-[#727272] font-label-md text-label-md transition-all active:scale-95 duration-200" disabled="" id="submit-button">
+                Pick 3 to continue
+            </button>
+</footer>
+</main>
+<script>
+        let selectedCount = 0;
+        const requiredCount = 3;
+        const submitBtn = document.getElementById('submit-button');
+
+        function toggleArtist(element) {
+            const isSelected = element.classList.toggle('selected');
+            
+            if (isSelected) {
+                selectedCount++;
+                // Add Haptic-like micro interaction
+                element.style.transform = 'scale(1.1)';
+                setTimeout(() => element.style.transform = '', 100);
+            } else {
+                selectedCount--;
+            }
+
+            updateButtonState();
+        }
+
+        function updateButtonState() {
+            if (selectedCount >= requiredCount) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Continue";
+                submitBtn.classList.add('btn-active');
+                submitBtn.classList.remove('bg-[#333333]', 'text-[#727272]');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.innerText = `Pick ${requiredCount - selectedCount} more to continue`;
+                if (selectedCount === 0) submitBtn.innerText = `Pick ${requiredCount} to continue`;
+                submitBtn.classList.remove('btn-active');
+                submitBtn.classList.add('bg-[#333333]', 'text-[#727272]');
+            }
+        }
+    </script>
+</body></html>
