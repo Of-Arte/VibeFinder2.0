@@ -22,6 +22,5 @@ frontend/dist/
 # Pytest cache
 .pytest_cache/
 
-project_instructions.md
-handoff.md
+# Claude Files
 .claude/
