@@ -1,8 +1,8 @@
 # VibeFinder 2.0: The AI DJ & Dynamic Profiler
 
 ## Base Project Identification
-**Original Project:** VibeFinder 1.0 (Modules 1-3)
-**Original Summary:** VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded 18-song CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
+**Original Project:** VibeFinder 1.0
+**Original Summary:** VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
 ## Title and Summary
 **VibeFinder 2.0** evolves the static CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
@@ -52,7 +52,7 @@ The system relies on an **Agentic Workflow** composed of three distinct LLM agen
 
 ## Sample Interactions (Execution Evidence)
 
-These are **real, unedited responses** captured from `POST /api/recommend` (playlists trimmed to keep the snippet short; cover/preview URLs truncated).
+Captured from `POST /api/recommend`.
 
 ### Example 1: High Energy EDM
 
@@ -101,8 +101,6 @@ These are **real, unedited responses** captured from `POST /api/recommend` (play
   ]
 }
 ```
-
-> Note: the DJ intro never addresses the listener by name — the name is untrusted free-text and is deliberately kept out of the LLM prompt (see model card). Personalization comes from the selected artists and the top track; the UI greets the user by name separately.
 
 ### Example 2: Chill Acoustic
 
@@ -154,7 +152,7 @@ These are **real, unedited responses** captured from `POST /api/recommend` (play
 ## Design Decisions
 - **Agentic Workflow**: This project uses multiple LLM agents that handle distinct tasks: translation, classification, and text generation.
 - **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, I bundled the tracks into a single JSON array payload.
-- **Request Rate Limiting**: Because each recommendation makes several Gemini calls, the `/api/recommend` endpoint caps each client (by IP) at **3 playlist generations per rolling hour**, returning HTTP `429` afterward. Both the limit and the window are configurable via the `RATE_LIMIT_MAX_REQUESTS` and `RATE_LIMIT_WINDOW_SECONDS` env vars. The counter lives in process memory (a lightweight cost guardrail, not a security boundary) and resets on restart.
+- **Rate Limiting**: /api/recommend limits each IP to 3 playlist generations per rolling hour and returns HTTP 429 when exceeded.
 - **Artist Selection**: By restricting the user to selecting from a curated list of 16 real-world artists, I tried to prevent edge-case hallucinations and ensure the translator always has solid context to work from.
 
 ## Testing Summary
