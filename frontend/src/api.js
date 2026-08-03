@@ -1,8 +1,8 @@
 // API integration for VibeFinder 2.0.
 //
-// All third-party access (Spotify Client Credentials, Deezer, Gemini) happens
-// server-side in the FastAPI backend — the Client Secret is never exposed to
-// the browser. The frontend only talks to our own /api endpoint, proxied to
+// All third-party access (Deezer track retrieval, Gemini agents) happens
+// server-side in the FastAPI backend — no API keys are ever exposed to the
+// browser. The frontend only talks to our own /api endpoint, proxied to
 // http://localhost:8000 by Vite in development (see vite.config.js).
 
 /**

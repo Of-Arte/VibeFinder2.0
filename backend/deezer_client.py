@@ -1,12 +1,12 @@
 """
-Deezer track-retrieval client (fallback for when Spotify keys are absent).
+Deezer track-retrieval client — the sole track source for VibeFinder 2.0.
 
 Deezer's public API needs no authentication. For each selected artist we:
   1. search the artist name -> artist id
   2. pull /artist/{id}/top for their signature tracks
   3. pull /artist/{id}/related to broaden the pool with similar artists' tops
 
-Returns the same standardized dict shape as the Spotify client:
+Returns a standardized list of dicts:
     [{"title": ..., "artist": ..., "cover_url": ..., "preview_url": ...}]
 """
 from typing import Dict, List, Optional
@@ -36,8 +36,13 @@ def _search_artist_id(name: str) -> Optional[str]:
     return str(items[0]["id"]) if items else None
 
 
-def _standardize(track: dict) -> Dict[str, str]:
-    """Map a Deezer track object to our standardized dict shape."""
+def _standardize(track: dict) -> Dict:
+    """Map a Deezer track object to our standardized dict shape.
+
+    We keep the raw signal Deezer exposes (bpm, rank/popularity, duration) so
+    that classification — and, critically, the deterministic fallback — can
+    produce *distinct* per-track features instead of a flat constant.
+    """
     album = track.get("album") or {}
     artist = track.get("artist") or {}
     return {
@@ -46,6 +51,10 @@ def _standardize(track: dict) -> Dict[str, str]:
         "cover_url": album.get("cover_medium") or album.get("cover") or "",
         # Deezer exposes a 30s preview under `preview`.
         "preview_url": track.get("preview") or "",
+        # Raw signal — often sparse (bpm is frequently 0), but real when present.
+        "deezer_bpm": float(track.get("bpm") or 0),
+        "deezer_rank": int(track.get("rank") or 0),
+        "deezer_duration": int(track.get("duration") or 0),
     }
 
 
