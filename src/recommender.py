@@ -1,5 +1,5 @@
 import csv
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Iterable
 from dataclasses import dataclass
 
 @dataclass
@@ -105,68 +105,171 @@ def load_songs(csv_path: str) -> List[Dict]:
             })
     return songs
 
-def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
+@dataclass(frozen=True)
+class ScoringWeights:
     """
-    Scores a single song against user preferences based on the Algorithm Recipe.
-    Returns a tuple of (numeric_score, explanation_reasons).
+    Tunable weights for each scoring component.
+
+    Categorical matches (genre, mood) are deliberately modest: within a
+    single-genre or single-artist candidate pool they fire identically for
+    every track and therefore carry no ranking information. The continuous
+    proximity features (energy, valence, danceability, tempo) are what
+    actually separate tracks, so they carry the bulk of the weight.
     """
-    score = 0.0
-    reasons = []
+    genre_exact: float = 2.0
+    genre_partial: float = 1.0
+    mood_exact: float = 1.5
+    energy: float = 2.0
+    valence: float = 1.5
+    danceability: float = 1.5
+    acoustic: float = 1.5
+    tempo: float = 1.0
+    valence_bonus: float = 0.5
+    # Tempo distance is normalised over this BPM window before scoring.
+    tempo_scale_bpm: float = 60.0
 
-    # 1. Genre match logic
-    target_genre = (user_prefs.get("favorite_genre") or user_prefs.get("genre") or "").strip().lower()
-    song_genre = song.get("genre", "").strip().lower()
-    if target_genre and song_genre:
-        if target_genre == song_genre:
-            score += 3.0
-            reasons.append("Exact genre match (+3.0)")
-        elif target_genre in song_genre or song_genre in target_genre:
-            score += 1.5
-            reasons.append("Partial genre match (+1.5)")
 
-    # 2. Mood match logic
-    target_mood = (user_prefs.get("favorite_mood") or user_prefs.get("mood") or "").strip().lower()
-    song_mood = song.get("mood", "").strip().lower()
-    if target_mood and song_mood:
-        if target_mood == song_mood:
-            score += 2.0
-            reasons.append("Mood match (+2.0)")
+DEFAULT_WEIGHTS = ScoringWeights()
 
-    # 3. Energy similarity logic
-    target_energy = user_prefs.get("target_energy") if "target_energy" in user_prefs else user_prefs.get("energy")
-    if target_energy is not None:
-        target_energy = float(target_energy)
-        song_energy = float(song.get("energy", 0.5))
-        distance = abs(song_energy - target_energy)
-        energy_score = max(0.0, 2.0 * (1.0 - distance))
-        score += energy_score
-        reasons.append(f"Energy proximity ({1.0 - distance:.0%} match, +{energy_score:.2f})")
+# A scored contribution: (points_awarded, human-readable explanation).
+Component = Tuple[float, str]
 
-    # 4. Acousticness preference logic
-    likes_acoustic = user_prefs.get("likes_acoustic")
+
+def _target(prefs: Dict, *keys: str) -> Optional[float]:
+    """Return the first present, non-None preference value among ``keys``."""
+    for key in keys:
+        value = prefs.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def _proximity(target: float, actual: float, weight: float,
+               unit_scale: float = 1.0) -> Tuple[float, float]:
+    """
+    Score closeness between a target and an actual value.
+
+    Returns (points, match_fraction) where match_fraction is a 0..1 closeness
+    used only for display. Distance is normalised by ``unit_scale`` so features
+    on different ranges (e.g. tempo in BPM) can share the same 0..1 math.
+    """
+    distance = abs(actual - target) / unit_scale
+    match = max(0.0, 1.0 - distance)
+    return weight * match, match
+
+
+def _score_genre(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = (prefs.get("favorite_genre") or prefs.get("genre") or "").strip().lower()
+    genre = str(song.get("genre", "")).strip().lower()
+    if not (target and genre):
+        return []
+    if target == genre:
+        return [(w.genre_exact, f"Exact genre match (+{w.genre_exact:.1f})")]
+    if target in genre or genre in target:
+        return [(w.genre_partial, f"Partial genre match (+{w.genre_partial:.1f})")]
+    return []
+
+
+def _score_mood(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
+    mood = str(song.get("mood", "")).strip().lower()
+    if target and mood and target == mood:
+        return [(w.mood_exact, f"Mood match (+{w.mood_exact:.1f})")]
+    return []
+
+
+def _score_energy(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = _target(prefs, "target_energy", "energy")
+    if target is None:
+        return []
+    points, match = _proximity(float(target), float(song.get("energy", 0.5)), w.energy)
+    return [(points, f"Energy proximity ({match:.0%} match, +{points:.2f})")]
+
+
+def _score_valence(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = _target(prefs, "target_valence", "valence")
+    if target is None:
+        return []
+    points, match = _proximity(float(target), float(song.get("valence", 0.5)), w.valence)
+    return [(points, f"Valence proximity ({match:.0%} match, +{points:.2f})")]
+
+
+def _score_danceability(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = _target(prefs, "target_danceability", "danceability")
+    if target is None:
+        return []
+    points, match = _proximity(float(target), float(song.get("danceability", 0.5)), w.danceability)
+    return [(points, f"Danceability proximity ({match:.0%} match, +{points:.2f})")]
+
+
+def _score_tempo(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target = _target(prefs, "target_tempo_bpm", "tempo_bpm")
+    if target is None:
+        return []
+    points, match = _proximity(
+        float(target), float(song.get("tempo_bpm", 110.0)), w.tempo,
+        unit_scale=w.tempo_scale_bpm,
+    )
+    return [(points, f"Tempo proximity ({match:.0%} match, +{points:.2f})")]
+
+
+def _score_acoustic(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
     song_acoustic = float(song.get("acousticness", 0.5))
-    if likes_acoustic is not None:
-        if likes_acoustic:
-            acoustic_score = 1.5 * song_acoustic
-            score += acoustic_score
-            reasons.append(f"Acoustic match (+{acoustic_score:.2f})")
-        else:
-            acoustic_score = 1.5 * (1.0 - song_acoustic)
-            score += acoustic_score
-            reasons.append(f"Produced/Electronic match (+{acoustic_score:.2f})")
-    elif "acousticness" in user_prefs:
-        target_acoustic = float(user_prefs["acousticness"])
-        dist = abs(song_acoustic - target_acoustic)
-        ac_score = max(0.0, 1.5 * (1.0 - dist))
-        score += ac_score
-        reasons.append(f"Acousticness proximity (+{ac_score:.2f})")
+    # Prefer a continuous target when the vibe provides one; otherwise fall
+    # back to the boolean like/dislike preference.
+    target = _target(prefs, "target_acousticness", "acousticness")
+    if target is not None:
+        points, match = _proximity(float(target), song_acoustic, w.acoustic)
+        return [(points, f"Acousticness proximity ({match:.0%} match, +{points:.2f})")]
+    likes_acoustic = prefs.get("likes_acoustic")
+    if likes_acoustic is None:
+        return []
+    if likes_acoustic:
+        points = w.acoustic * song_acoustic
+        return [(points, f"Acoustic match (+{points:.2f})")]
+    points = w.acoustic * (1.0 - song_acoustic)
+    return [(points, f"Produced/Electronic match (+{points:.2f})")]
 
-    # 5. Valence/Vibe bonus
+
+def _score_valence_bonus(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
+    target_mood = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
     if target_mood == "happy" and float(song.get("valence", 0.0)) >= 0.7:
-        score += 0.5
-        reasons.append("Upbeat valence bonus (+0.5)")
+        return [(w.valence_bonus, f"Upbeat valence bonus (+{w.valence_bonus:.1f})")]
+    return []
 
-    return round(score, 2), reasons
+
+# Ordered scoring pipeline. Each scorer is pure and self-skips when its target
+# preference is absent, so a sparse profile (e.g. the OOP UserProfile path)
+# simply exercises fewer components than an enriched vibe target.
+_SCORERS = (
+    _score_genre,
+    _score_mood,
+    _score_energy,
+    _score_valence,
+    _score_danceability,
+    _score_tempo,
+    _score_acoustic,
+    _score_valence_bonus,
+)
+
+
+def score_song(user_prefs: Dict, song: Dict,
+               weights: ScoringWeights = DEFAULT_WEIGHTS) -> Tuple[float, List[str]]:
+    """
+    Score a single song against user preferences by summing weighted components.
+
+    Returns (numeric_score, explanation_reasons). Continuous proximity features
+    (energy, valence, danceability, tempo) do the discriminating work; the
+    categorical genre/mood matches only break ranking ties when the pool spans
+    multiple genres.
+    """
+    total = 0.0
+    reasons: List[str] = []
+    for scorer in _SCORERS:
+        for points, reason in scorer(user_prefs, song, weights):
+            total += points
+            reasons.append(reason)
+    return round(total, 2), reasons
 
 def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
     """
