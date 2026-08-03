@@ -15,6 +15,30 @@ The system relies on an **Agentic Workflow** composed of three distinct LLM agen
 
 *(See assets/diagrams/architecture.mmd for the full visual flow: Input -> Fetch -> Classifier -> Scorer -> DJ -> UI).*
 
+## UI / UX — The User Flow
+
+Three screens, one trip from landing page to personalized playlist.
+
+<table>
+  <tr>
+    <th align="center">① Splash</th>
+    <th align="center">② Pick Artists</th>
+    <th align="center">③ Playlist + DJ Intro</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/mockups/01-splash-screen/mobile-default/screen.png" width="220" alt="Splash screen – mobile"></td>
+    <td align="center"><img src="assets/mockups/02-artist-selection/mobile-selected/screen.png" width="220" alt="Artist selection – 3 selected"></td>
+    <td align="center"><img src="assets/mockups/03-playlist-results/mobile-info-selected/screen.png" width="220" alt="Playlist results with track info expanded"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Name entry — never sent to any AI model</sub></td>
+    <td align="center"><sub>Curated list of 16 artists; pick 3 or more</sub></td>
+    <td align="center"><sub>DJ intro + ranked tracks with match reasoning</sub></td>
+  </tr>
+</table>
+
+> See [`assets/mockups/`](assets/mockups/) for all viewport variants and HTML source files.
+
 ## Setup Instructions
 
 ### 1. Backend (FastAPI)
