@@ -5,7 +5,7 @@ export default function PlaylistResults({ result, onRestart }) {
   // Only one preview plays at a time — track the active card by index.
   const [playingIndex, setPlayingIndex] = useState(null)
 
-  const { user_name, dj_intro, playlist, source, target_vibe } = result
+  const { user_name, dj_intro, playlist, source, target_vibe, degraded } = result
   const greeting = user_name?.trim() ? `${user_name}'s` : 'Your'
 
   return (
@@ -19,6 +19,15 @@ export default function PlaylistResults({ result, onRestart }) {
           Start over
         </button>
       </header>
+
+      {degraded && (
+        <div className="degraded-banner" role="status">
+          <span className="degraded-icon" aria-hidden="true">⚠️</span>
+          <span>
+            AI personalization is temporarily unavailable, scores may look uniform. Try again shortly.
+          </span>
+        </div>
+      )}
 
       {/* DJ Intro card */}
       <section className="dj-card">

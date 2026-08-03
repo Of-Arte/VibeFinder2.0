@@ -267,6 +267,25 @@
 }
 
 /* DJ intro card */
+.degraded-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-card);
+  background: rgba(240, 180, 41, 0.12);
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.degraded-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
 .dj-card {
   background: var(--bg-primary);
   border: 1px solid var(--border-subtle);
