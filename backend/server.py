@@ -2,17 +2,18 @@
 VibeFinder 2.0 FastAPI server.
 
 Exposes POST /api/recommend, which orchestrates the full pipeline:
-    Input -> Fetch (Spotify/Deezer) -> Cache -> Classifier -> Scorer -> DJ -> UI
+    Input -> Fetch (Deezer) -> Classifier -> Scorer -> DJ -> UI
 
 Run with:  uvicorn backend.server:app --port 8000
 """
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from backend import agent, cache, config, deezer_client, spotify_client
+from backend import agent, config, deezer_client, ratelimit
 from src.recommender import score_song
 
 app = FastAPI(title="VibeFinder 2.0 API", version="2.0.0")
@@ -52,28 +53,25 @@ class RecommendedTrack(BaseModel):
 
 class RecommendResponse(BaseModel):
     user_name: str
-    source: str  # "spotify" | "deezer"
+    source: str  # "deezer"
     target_vibe: Dict
     dj_intro: str
     playlist: List[RecommendedTrack]
+    # True when a ranking-affecting Gemini call fell back to constants, so the
+    # UI can warn that scores may be uniform rather than personalized.
+    degraded: bool = False
 
 
 # --- Helpers ---------------------------------------------------------------
-def _fetch_pool(selected_artists: List[str]) -> (List[Dict], str):
+def _fetch_pool(selected_artists: List[str]) -> Tuple[List[Dict], str]:
     """
-    Retrieve a raw track pool, preferring Spotify and falling back to Deezer.
+    Retrieve a raw track pool of 30-50 tracks from the keyless Deezer API.
 
     Returns (pool, source_name).
     """
-    if config.has_spotify_credentials():
-        try:
-            pool = spotify_client.fetch_tracks(selected_artists, limit=40)
-            if pool:
-                return pool, "spotify"
-        except spotify_client.SpotifyError:
-            pass  # Fall through to Deezer.
-
-    pool = deezer_client.fetch_tracks(selected_artists, target_pool=40)
+    pool = deezer_client.fetch_tracks(
+        selected_artists, target_pool=config.CLASSIFY_POOL_SIZE
+    )
     return pool, "deezer"
 
 
@@ -81,29 +79,12 @@ def _classify_pool(pool: List[Dict]) -> List[Dict]:
     """
     Ensure every track in the pool has classified attributes.
 
-    Uses the cache first; only the cache-miss tracks go to the batched
-    Gemini classifier (a single API call), then results are cached.
+    The whole pool goes to the batched Gemini classifier in a single API call.
     """
-    store = cache.load_cache()
-
-    unclassified: List[Dict] = []
-    unclassified_idx: List[int] = []
-
-    for i, track in enumerate(pool):
-        cached = cache.get_cached(store, track["artist"], track["title"])
-        if cached:
-            track.update(cached)
-        else:
-            unclassified.append(track)
-            unclassified_idx.append(i)
-
-    if unclassified:
-        classified = agent.classify_tracks_batch(unclassified)
-        for local_i, attrs in enumerate(classified):
-            track = pool[unclassified_idx[local_i]]
+    if pool:
+        classified = agent.classify_tracks_batch(pool)
+        for track, attrs in zip(pool, classified):
             track.update(attrs)
-            cache.put_cached(store, track["artist"], track["title"], attrs)
-        cache.save_cache(store)
 
     return pool
 
@@ -145,19 +126,39 @@ def health() -> Dict:
     return {
         "status": "ok",
         "gemini": config.has_gemini(),
-        "spotify": config.has_spotify_credentials(),
+        "source": "deezer",
     }
 
 
 @app.post("/api/recommend", response_model=RecommendResponse)
-def recommend(req: RecommendRequest) -> RecommendResponse:
+def recommend(req: RecommendRequest, request: Request):
     """Full recommendation pipeline for a set of selected artists."""
+    # 0. Per-client rate limit: the pipeline makes several Gemini calls, so
+    #    each client may generate only RATE_LIMIT_MAX_REQUESTS playlists per
+    #    rolling window before being throttled.
+    client_id = request.client.host if request.client else "unknown"
+    if not ratelimit.check(client_id):
+        return JSONResponse(
+            status_code=429,
+            content={
+                "detail": (
+                    f"Rate limit reached. You can generate up to "
+                    f"{config.RATE_LIMIT_MAX_REQUESTS} playlists per "
+                    f"{config.RATE_LIMIT_WINDOW_SECONDS // 60} minutes. "
+                    f"Please try again later."
+                )
+            },
+        )
+
     artists = [a.strip() for a in req.selected_artists if a and a.strip()]
 
-    # 1. Fetch a raw track pool (Spotify primary, Deezer fallback).
+    # Reset the request-scoped degradation flag before any Gemini calls.
+    agent.reset_degraded()
+
+    # 1. Fetch a raw track pool from Deezer.
     pool, source = _fetch_pool(artists)
 
-    # 2. Classify (cache-first, batched Gemini for misses).
+    # 2. Classify (batched Gemini, single API call).
     pool = _classify_pool(pool)
 
     # 3. Translate artist picks -> target vibe (Gemini vibe translator).
@@ -166,8 +167,10 @@ def recommend(req: RecommendRequest) -> RecommendResponse:
     # 4. Score against the recommender core and take the top 5.
     playlist = _score_pool(pool, target_vibe, k=5)
 
-    # 5. DJ intro over the ranked output.
-    dj_intro = agent.generate_dj_intro(req.user_name, artists, playlist)
+    # 5. DJ intro over the ranked output. The user's name is deliberately NOT
+    #    passed to the agent (untrusted free text -> prompt-injection risk); the
+    #    UI greets the user by name separately using the returned user_name.
+    dj_intro = agent.generate_dj_intro(artists, playlist)
 
     return RecommendResponse(
         user_name=req.user_name,
@@ -175,4 +178,5 @@ def recommend(req: RecommendRequest) -> RecommendResponse:
         target_vibe=target_vibe,
         dj_intro=dj_intro,
         playlist=[RecommendedTrack(**t) for t in playlist],
+        degraded=agent.is_degraded(),
     )
