@@ -1,0 +1,20 @@
+graph TD
+    User([User]) -->|Inputs Name & Picks Artists| React["React Frontend (Vite)"]
+    React -->|"POST /api/recommend (rate limited: 3 / window)"| FastAPI["FastAPI Backend"]
+
+    FastAPI -->|1. Artist Picks| Fetcher["Deezer Client (keyless)"]
+    Fetcher -->|top + related tracks| RawPool["Raw Track Pool (30-50 songs)"]
+
+    RawPool --> GeminiClass["Gemini Classifier Agent (BATCHED, 1 call)"]
+    GeminiClass -->|Classified Track JSON| ScorablePool["Classified Track Pool"]
+
+    FastAPI -->|2. Artist Picks| GeminiVibe["Gemini Vibe Translator Agent"]
+    GeminiVibe -->|Inferred Target Vibe| Scoring["Recommender Engine (src/recommender.py)"]
+
+    ScorablePool --> Scoring
+    Scoring -->|Ranks tracks & picks Top 5| GeminiDJ["Gemini DJ Intro Agent"]
+    GeminiDJ -->|Custom Radio Intro| FastAPI
+
+    Scoring -->|Top Ranked Tracks| FastAPI
+    FastAPI -->|Playlist + DJ Intro + Previews| React
+    React -->|Displays UI| User

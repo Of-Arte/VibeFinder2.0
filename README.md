@@ -1,169 +1,168 @@
-# 🎵 Music Recommender Simulation
+# VibeFinder 2.0: The AI DJ & Dynamic Profiler
 
-## Project Summary
+## Base Project Identification
+**Original Project:** VibeFinder 1.0 (Modules 1-3)
+**Original Summary:** VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded 18-song CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
-VibeFinder 1.0 is a music recommendation engine designed to connect a user's personal taste profile with matching songs in a catalog. This simulation compares song characteristics—such as genre, mood, energy level, acoustic attributes, and valence—against user preferences. The system computes a numeric score for every track and presents a ranked list of top recommendations with reasons for each suggestion.
+## Title and Summary
+**VibeFinder 2.0** evolves the static CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
 
----
+## Architecture Overview
+The system relies on an **Agentic Workflow** composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine:
+1. **The Vibe Translator Agent**: Calculates the target algorithmic metrics (energy, mood, genre) from human inputs (artist names).
+2. **The Classifier Agent**: Classifies raw tracks pulled from the Deezer API, using a batched strategy to prevent rate limits.
+3. **The DJ Agent**: Generates a personalized intro and summarizes the final playlist into natural language commentary.
 
-## How The System Works
+*(See assets/diagrams/architecture.mmd for the full visual flow: Input -> Fetch -> Classifier -> Scorer -> DJ -> UI).*
 
-Our music recommender turns raw data into personalized suggestions through a two-step process: **Scoring** individual songs and **Ranking** the catalog.
+## Setup Instructions
 
-### 1. Data Representation
-
-- **Song Attributes**: Every track in data/songs.csv contains structured features:
-  - `genre` (pop, lofi, rock, jazz, edm, classical, metal, reggae, hip hop, blues, folk, world)
-  - `mood` (happy, chill, intense, focused, aggressive, dramatic, nostalgic)
-  - `energy` (scale from 0.0 for calm to 1.0 for high intensity)
-  - `acousticness` (scale from 0.0 for electronic to 1.0 for acoustic instruments)
-  - `valence` (measure of musical positivity from 0.0 gloomy to 1.0 upbeat)
-  - `tempo_bpm` & `danceability` (rhythmic attributes)
-
-- **User Taste Profile**: A user's preference profile stores:
-  - `favorite_genre`: The listener's preferred style of music.
-  - `favorite_mood`: The desired emotional vibe.
-  - `target_energy`: Desired intensity level on a 0.0 to 1.0 scale.
-  - `likes_acoustic`: Boolean flag (True/False) indicating preference for acoustic versus electronic instruments.
-
----
-
-### 2. Algorithm Recipe (Scoring Rule)
-
-To evaluate how well a song fits a user's profile, the system computes a numeric score using a multi-attribute point system:
-
-1. **Genre Match** (+3.0 max points):
-   - Exact Match: +3.0 points if the song's genre matches favorite_genre exactly.
-   - Partial Match: +1.5 points if sub-genres overlap (e.g., "indie pop" matching "pop").
-2. **Mood Match** (+2.0 points):
-   - +2.0 points if the song's mood matches favorite_mood.
-3. **Energy Proximity** (+2.0 max points):
-   - Calculates energy difference: distance = |song_energy - target_energy|.
-   - Proximity score: 2.0 \* (1.0 - distance). A track with identical energy gains +2.0 points, while larger differences receive proportionately fewer points.
-4. **Acoustic Preference** (+1.5 max points):
-   - If likes_acoustic is True: 1.5 \* song_acousticness.
-   - If likes_acoustic is False: 1.5 \* (1.0 - song_acousticness).
-5. **Upbeat Vibe Bonus** (+0.5 points):
-   - +0.5 points if the user wants a "happy" mood and the song has high valence (>= 0.7).
-
-The individual points are added together to yield the final track score along with plain-language explanation tags.
-
----
-
-### 3. Recommendation Process (Ranking Rule)
-
-1. **Catalog Scanning**: The system loops through all songs loaded from data/songs.csv.
-2. **Scoring**: The score_song function evaluates each track and generates its total score and explanation breakdown.
-3. **Sorting**: The songs are sorted in descending order by their numeric score (sorted(key=score, reverse=True)).
-4. **Selection**: The system selects the top k highest-scoring tracks (default k=3 or k=5) to display to the user.
-
-### Potential Bias Note
-
-Because genre matches carry heavy point values (+3.0), this scoring logic might over-prioritize genre, ignoring great songs in adjacent genres that match the user's mood or energy perfectly.
-
----
-
-## Getting Started
-
-### Setup
-
-1. Create a virtual environment (optional but recommended):
-
+### 1. Backend (FastAPI)
+1. From the **project root** (the backend runs as the `backend` package, so do not `cd` into it):
+2. Create and activate a virtual environment:
    ```bash
    python3 -m venv .venv
-   source .venv/bin/activate      # Mac or Linux
-   .venv\Scripts\activate         # Windows
+   source .venv/bin/activate  # macOS/Linux
+   # or .venv\Scripts\activate on Windows
    ```
-
-2. Install dependencies:
-
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-
-3. Run the app:
-
+4. Create a `.env` file in the root directory:
+   ```text
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+5. Start the server:
    ```bash
-   python3 -m src.main
+   uvicorn backend.server:app --reload --port 8000
    ```
 
-### Running Tests
+### 2. Frontend (React + Vite)
+1. Open a new terminal and navigate to the frontend: `cd frontend`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+4. Open the provided localhost link (usually `http://localhost:5173`) in your browser.
 
-Run unit tests with pytest:
+## Sample Interactions (Execution Evidence)
 
-```bash
-python3 -m pytest
+These are **real, unedited responses** captured from `POST /api/recommend` (playlists trimmed to keep the snippet short; cover/preview URLs truncated).
+
+### Example 1: High Energy EDM
+
+**Request:**
+```json
+{
+  "user_name": "Alex",
+  "selected_artists": ["Daft Punk", "Justice", "The Weeknd"]
+}
 ```
 
----
-
-## Sample Recommendation Output
-
-Below is actual output generated by running `python3 -m src.main`:
-
-```text
-Loaded 18 songs from data/songs.csv.
-
-============================================================
-Profile: Upbeat Pop Lover
-Preferences: {'genre': 'pop', 'mood': 'happy', 'energy': 0.8, 'likes_acoustic': False}
-------------------------------------------------------------
-1. Sunrise City by Neon Echo [POP] - Score: 8.69
-   Reasons: Exact genre match (+3.0), Mood match (+2.0), Energy proximity (98% match, +1.96), Produced/Electronic match (+1.23), Upbeat valence bonus (+0.5)
-2. Rooftop Lights by Indigo Parade [INDIE POP] - Score: 6.89
-   Reasons: Partial genre match (+1.5), Mood match (+2.0), Energy proximity (96% match, +1.92), Produced/Electronic match (+0.98), Upbeat valence bonus (+0.5)
-3. Gym Hero by Max Pulse [POP] - Score: 6.67
-   Reasons: Exact genre match (+3.0), Energy proximity (87% match, +1.74), Produced/Electronic match (+1.42), Upbeat valence bonus (+0.5)
-
-============================================================
-Profile: Chill Lofi Listener
-Preferences: {'genre': 'lofi', 'mood': 'chill', 'energy': 0.35, 'likes_acoustic': True}
-------------------------------------------------------------
-1. Library Rain by Paper Lanterns [LOFI] - Score: 8.29
-   Reasons: Exact genre match (+3.0), Mood match (+2.0), Energy proximity (100% match, +2.00), Acoustic match (+1.29)
-2. Midnight Coding by LoRoom [LOFI] - Score: 7.92
-   Reasons: Exact genre match (+3.0), Mood match (+2.0), Energy proximity (93% match, +1.86), Acoustic match (+1.06)
-3. Focus Flow by LoRoom [LOFI] - Score: 6.07
-   Reasons: Exact genre match (+3.0), Energy proximity (95% match, +1.90), Acoustic match (+1.17)
-
-============================================================
-Profile: High Energy Workout / Rock
-Preferences: {'genre': 'rock', 'mood': 'intense', 'energy': 0.95, 'likes_acoustic': False}
-------------------------------------------------------------
-1. Storm Runner by Voltline [ROCK] - Score: 8.27
-   Reasons: Exact genre match (+3.0), Mood match (+2.0), Energy proximity (96% match, +1.92), Produced/Electronic match (+1.35)
-2. Gym Hero by Max Pulse [POP] - Score: 5.38
-   Reasons: Mood match (+2.0), Energy proximity (98% match, +1.96), Produced/Electronic match (+1.42)
-3. Thunderous Wrath by Iron Sledge [METAL] - Score: 3.48
-   Reasons: Energy proximity (100% match, +2.00), Produced/Electronic match (+1.48)
+**Response `200 OK`:**
+```json
+{
+  "user_name": "Alex",
+  "source": "deezer",
+  "target_vibe": {
+    "favorite_genre": "edm",
+    "favorite_mood": "intense",
+    "target_energy": 0.85,
+    "likes_acoustic": false
+  },
+  "dj_intro": "If you've been craving that heavy French touch and neon-soaked groove, I see you. Stay locked right here because we're diving straight into the dark, pulsating world of \"World Away\" with the Marie Davidson Remix.",
+  "playlist": [
+    {
+      "title": "World Away (Marie Davidson Remix)",
+      "artist": "Etienne de Crécy",
+      "genre": "edm",
+      "mood": "intense",
+      "energy": 0.85,
+      "tempo_bpm": 125.0,
+      "valence": 0.45,
+      "danceability": 0.7,
+      "acousticness": 0.04,
+      "cover_url": "https://cdn-images.dzcdn.net/images/cover/8adff8867bde078c...",
+      "preview_url": "https://cdnt-preview.dzcdn.net/api/1/1/f/d/f/0/fdf1bafbdeb...",
+      "score": 8.44,
+      "reasons": [
+        "Exact genre match (+3.0)",
+        "Mood match (+2.0)",
+        "Energy proximity (100% match, +2.00)",
+        "Produced/Electronic match (+1.44)"
+      ]
+    }
+    // ... 4 more tracks
+  ]
+}
 ```
 
----
+> Note: the DJ intro never addresses the listener by name — the name is untrusted free-text and is deliberately kept out of the LLM prompt (see model card). Personalization comes from the selected artists and the top track; the UI greets the user by name separately.
 
-## Experiments You Tried
+### Example 2: Chill Acoustic
 
-1. **Genre Weight vs. Energy Weight Shift**:
-   - _Experiment_: Reduced the genre weight from +3.0 down to +1.0 while increasing the energy proximity multiplier from 2.0 to 4.0.
-   - _Result_: The system became more sensitive to track tempo and intensity. For the "High Energy Workout" profile, high-energy pop and metal tracks ranked closer to the top rock song. This shows that weighting determines whether recommendations prioritize style versus vibe.
+**Request:**
+```json
+{
+  "user_name": "Sarah",
+  "selected_artists": ["Fleet Foxes", "Bob Marley", "Taylor Swift"]
+}
+```
 
-2. **Cross-Profile Behavior Test**:
-   - _Experiment_: Evaluated how the system behaves for users with conflicting taste attributes.
-   - _Result_: Songs with matching moods placed higher than songs with matching energy levels. This shows that some attribute matches can overshadow numerical targets.
+**Response `200 OK`:**
+```json
+{
+  "user_name": "Sarah",
+  "source": "deezer",
+  "target_vibe": {
+    "favorite_genre": "folk",
+    "favorite_mood": "chill",
+    "target_energy": 0.5,
+    "likes_acoustic": true
+  },
+  "dj_intro": "From the soaring harmonies of Fleet Foxes and the timeless grooves of Bob Marley to the brilliant storytelling of Taylor Swift, your taste spans generations. Now, get ready to feel inspired as you listen to José González and 'Stay Alive' right here on your airwaves.",
+  "playlist": [
+    {
+      "title": "Stay Alive (From \"The Secret Life of Walter Mitty\" Soundtrack)",
+      "artist": "José González",
+      "genre": "folk",
+      "mood": "chill",
+      "energy": 0.48,
+      "tempo_bpm": 118.0,
+      "valence": 0.52,
+      "danceability": 0.58,
+      "acousticness": 0.85,
+      "cover_url": "https://cdn-images.dzcdn.net/images/cover/3e8f8b9ff3d770fd...",
+      "preview_url": "https://cdnt-preview.dzcdn.net/api/1/1/7/f/9/0/7f9fea3d3ab...",
+      "score": 8.23,
+      "reasons": [
+        "Exact genre match (+3.0)",
+        "Mood match (+2.0)",
+        "Energy proximity (98% match, +1.96)",
+        "Acoustic match (+1.27)"
+      ]
+    }
+  ]
+}
+```
 
----
+## Design Decisions
+- **Agentic Workflow**: This project uses multiple LLM agents that handle distinct tasks: translation, classification, and text generation.
+- **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, I bundled the tracks into a single JSON array payload.
+- **Request Rate Limiting**: Because each recommendation makes several Gemini calls, the `/api/recommend` endpoint caps each client (by IP) at **3 playlist generations per rolling hour**, returning HTTP `429` afterward. Both the limit and the window are configurable via the `RATE_LIMIT_MAX_REQUESTS` and `RATE_LIMIT_WINDOW_SECONDS` env vars. The counter lives in process memory (a lightweight cost guardrail, not a security boundary) and resets on restart.
+- **Artist Selection**: By restricting the user to selecting from a curated list of 16 real-world artists, I tried to prevent edge-case hallucinations and ensure the translator always has solid context to work from.
 
-## Limitations and Risks
-
-1. **Small Catalog Constraint**: The system relies on a tiny 18-song catalog, which limits recommendation diversity and can cause popular tracks to repeat across profiles.
-2. **Metadata Dependency**: It does not analyze audio signals, lyrics, or style; it only knows what is coded in the CSV metadata.
-3. **Filter Bubble / Genre Heavy Bias**: Because genre matches carry heavy point values, users are rarely recommended great songs from genres that match their desired mood or energy perfectly.
-
----
+## Testing Summary
+- **Automated Testing**: The core scoring mathematical logic from src/recommender.py is fully covered by Pytest (test_recommender.py), ensuring that our backend integration did not break the VibeFinder 1.0 logic. 
+- **LLM Reliability**: By enforcing `response_mime_type="application/json"` and structuring the batched payload carefully, Gemini returned reliable JSON during local testing. A deterministic fallback system guarantees a valid response even when a Gemini call fails or returns malformed output.
+- **API Reliability**: The Deezer API requires no authentication keys, making the system immediately reproducible for anyone cloning the repository without additional credential setup.
 
 ## Reflection
+This project made me realize the complexities of combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
-[**Model Card**](model_card.md)
-
-Recommendation systems work by translating preferences into mathematical comparisons and heuristics. By calculating distance metrics on numerical attributes like energy and adding weighted rewards for category attributes like genre and mood, algorithms attempt to predict what the user wants.
-
-However, algorithms can have unintended consequences, such as creating filter bubbles and reinforcing existing biases. When models heavily weight explicit preferences or popular genres, they can obscure niche artists. Understanding how scoring weights shape recommendations is crucial for building fair systems that balance accuracy and discovery.
+*(See model_card.md for a deeper reflection on AI, ethics, and model biases).*
