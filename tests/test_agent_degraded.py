@@ -114,7 +114,7 @@ def test_classifier_partial_failure_degrades(monkeypatch):
     result = agent.classify_tracks_batch(tracks)
     assert agent.is_degraded() is True
     assert result[0]["energy"] == 0.9   # id 0 got real Gemini data
-    assert result[1]["genre"] == "pop"  # id 1 fell back (derived, not constant)
+    assert result[1]["genre"] in agent._GENRES  # id 1 fell back (derived, not constant)
     assert result[0] != result[1]       # the two tracks are not identical
 
 
@@ -153,17 +153,31 @@ def test_vibe_healthy_does_not_degrade(monkeypatch):
     assert vibe["target_valence"] == 0.7
 
 
-def test_vibe_outage_degrades_and_returns_default_profile(monkeypatch):
+def test_vibe_outage_degrades_and_returns_artist_derived_profile(monkeypatch):
     monkeypatch.setattr(agent, "_generate_json", lambda prompt, max_output_tokens=None: None)
-    vibe = agent.translate_artists_to_prefs(["Metallica"])
+    vibe = agent.translate_artists_to_prefs(["Iron Maiden"])
     assert agent.is_degraded() is True
-    # Falls back to the broadly-agreeable default pop profile.
-    assert vibe["favorite_genre"] == "pop"
+    # Falls back to artist-mapped genre ("metal") instead of generic "pop".
+    assert vibe["favorite_genre"] == "metal"
     assert vibe["favorite_mood"] == "happy"
     # The continuous target_* keys still exist so the scorer stays whole.
     for key in ("target_valence", "target_danceability",
                 "target_acousticness", "target_tempo_bpm"):
         assert key in vibe
+
+
+def test_fallback_classification_artist_genre_mapping(monkeypatch):
+    monkeypatch.setattr(agent, "_generate_json", lambda prompt, max_output_tokens=None: None)
+    tracks = [
+        {"title": "The Trooper", "artist": "Iron Maiden"},
+        {"title": "One More Time", "artist": "Daft Punk"},
+        {"title": "So What", "artist": "Miles Davis"},
+    ]
+    results = agent.classify_tracks_batch(tracks)
+    assert results[0]["genre"] == "metal"
+    assert results[1]["genre"] == "edm"
+    assert results[2]["genre"] == "jazz"
+
 
 
 # --- Scoping: DJ intro is cosmetic and must NOT trip the flag --------------

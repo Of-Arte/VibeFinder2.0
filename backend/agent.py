@@ -55,6 +55,42 @@ _MOODS = [
     "aggressive", "dramatic", "nostalgic",
 ]
 
+# Map curated/common artists to standard genres for deterministic degraded mode lookup.
+_ARTIST_GENRE_MAP = {
+    "taylor swift": "pop",
+    "billie eilish": "pop",
+    "kendrick lamar": "hip hop",
+    "daft punk": "edm",
+    "radiohead": "rock",
+    "miles davis": "jazz",
+    "iron maiden": "metal",
+    "bob marley": "reggae",
+    "adele": "pop",
+    "the weeknd": "pop",
+    "fleet foxes": "folk",
+    "ravi shankar": "world",
+    "nujabes": "lofi",
+    "beethoven": "classical",
+    "arctic monkeys": "rock",
+    "calvin harris": "edm",
+}
+
+
+def _get_fallback_artist_genre(artist_name: str) -> str:
+    """Resolve an artist name to a genre in degraded/fallback mode.
+
+    Looks up curated artist mapping first. For unmapped artists, deterministically
+    hashes the name onto ``_GENRES`` so fallback pools obtain distinct genres.
+    """
+    clean_name = (artist_name or "").strip().lower()
+    if clean_name in _ARTIST_GENRE_MAP:
+        return _ARTIST_GENRE_MAP[clean_name]
+    if not clean_name:
+        return "pop"
+    idx = int(_feature_hash(clean_name, "genre") * len(_GENRES)) % len(_GENRES)
+    return _GENRES[idx]
+
+
 # Lazily-initialized SDK model handle.
 _model = None
 
@@ -186,8 +222,11 @@ def _fallback_classification(track: Dict) -> Dict:
     else:
         mood = "chill"
 
+    # Genre derived from artist mapping or deterministic identity hash.
+    genre = _get_fallback_artist_genre(track.get("artist", ""))
+
     return {
-        "genre": "pop",
+        "genre": genre,
         "mood": mood,
         "energy": energy,
         "acousticness": acousticness,
@@ -352,10 +391,11 @@ def translate_artists_to_prefs(artists: List[str]) -> Dict:
             "target_tempo_bpm": tempo,
         }
 
-    # Deterministic fallback: a broadly agreeable, energetic pop profile.
-    mark_degraded("vibe translation fell back to the default pop profile")
+    # Deterministic fallback: profile anchored to user's selected artists.
+    mark_degraded("vibe translation fell back to the default artist-derived profile")
+    fallback_genre = _get_fallback_artist_genre(artists[0] if artists else "")
     return {
-        "favorite_genre": "pop",
+        "favorite_genre": fallback_genre,
         "favorite_mood": "happy",
         "target_energy": 0.6,
         "likes_acoustic": False,
