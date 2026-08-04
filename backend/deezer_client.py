@@ -21,6 +21,34 @@ class DeezerError(RuntimeError):
     """Raised when Deezer cannot fulfil a request."""
 
 
+_DEEZER_ID_TO_GENRE = {
+    132: "pop",          # Pop
+    116: "hip hop",      # Rap/Hip Hop
+    122: "hip hop",      # Reggaeton
+    152: "rock",         # Rock
+    113: "edm",          # Dance
+    165: "pop",          # R&B
+    85: "rock",          # Alternative
+    186: "pop",          # Christian
+    106: "edm",          # Electro
+    466: "folk",         # Folk
+    144: "reggae",       # Reggae
+    129: "jazz",         # Jazz
+    84: "folk",          # Country
+    98: "classical",     # Classical
+    173: "classical",    # Films/Games
+    464: "metal",        # Metal
+    169: "jazz",         # Soul & Funk
+    2: "world",          # African Music
+    16: "world",         # Asian Music
+    153: "blues",        # Blues
+    75: "world",         # Brazilian Music
+    71: "world",         # Cumbia
+    81: "world",         # Indian Music
+    197: "world",        # Latin Music
+}
+
+
 def _get(path: str, params: Optional[dict] = None) -> dict:
     """Perform a GET against the Deezer API and return parsed JSON."""
     resp = requests.get(f"{_API_BASE}{path}", params=params or {}, timeout=_TIMEOUT)
@@ -116,3 +144,28 @@ def fetch_tracks(selected_artists: List[str], target_pool: int = 40) -> List[Dic
         raise DeezerError("No Deezer artist ids resolved from selections.")
 
     return pool[:target_pool]
+
+
+def fetch_artist_genre(artist_name: str) -> Optional[str]:
+    """
+    Resolve an artist's genre dynamically from their Deezer albums.
+    Returns one of the supported genres, or None if unresolved.
+    """
+    clean_name = (artist_name or "").strip().lower()
+    if not clean_name:
+        return None
+    try:
+        artist_id = _search_artist_id(clean_name)
+        if not artist_id:
+            return None
+        # Retrieve the artist's albums to extract genre_id
+        albums_data = _get(f"/artist/{artist_id}/albums", {"limit": 3})
+        items = albums_data.get("data", [])
+        for album in items:
+            genre_id = album.get("genre_id")
+            if genre_id and int(genre_id) in _DEEZER_ID_TO_GENRE:
+                return _DEEZER_ID_TO_GENRE[int(genre_id)]
+    except Exception:
+        # Gracefully absorb connection timeouts or other network/JSON errors
+        pass
+    return None

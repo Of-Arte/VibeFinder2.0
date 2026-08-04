@@ -5,6 +5,7 @@ import NameStep from './components/NameStep'
 import ArtistPicker from './components/ArtistPicker'
 import Loading from './components/Loading'
 import PlaylistResults from './components/PlaylistResults'
+import OutageScreen from './components/OutageScreen'
 import { fetchRecommendations } from './api'
 
 // Screen state machine: 'splash' -> 'name' -> 'picker' -> 'loading' -> 'results'
@@ -13,23 +14,33 @@ function App() {
   const [userName, setUserName] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [selectedArtists, setSelectedArtists] = useState([])
 
   function handleNameContinue(name) {
     setUserName(name)
     setScreen('picker')
   }
 
-  async function handleGenerate(selectedArtists) {
+  async function handleGenerate(artistsList) {
+    setSelectedArtists(artistsList)
     setError('')
     setScreen('loading')
     try {
-      const data = await fetchRecommendations(userName, selectedArtists)
+      const data = await fetchRecommendations(userName, artistsList)
       setResult(data)
       setScreen('results')
     } catch (err) {
       setError(err.message || 'Something went wrong.')
-      setScreen('picker')
+      if (err.status === 502 || err.status === 503) {
+        setScreen('outage')
+      } else {
+        setScreen('picker')
+      }
     }
+  }
+
+  async function handleRetry() {
+    await handleGenerate(selectedArtists)
   }
 
   function handleRestart() {
@@ -49,6 +60,10 @@ function App() {
       )}
 
       {screen === 'loading' && <Loading />}
+
+      {screen === 'outage' && (
+        <OutageScreen error={error} onRetry={handleRetry} />
+      )}
 
       {screen === 'results' && result && (
         <PlaylistResults result={result} onRestart={handleRestart} />

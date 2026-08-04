@@ -8,7 +8,7 @@ Run with:  uvicorn backend.server:app --port 8000
 """
 from typing import Dict, List, Tuple
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -156,7 +156,17 @@ def recommend(req: RecommendRequest, request: Request):
     agent.reset_degraded()
 
     # 1. Fetch a raw track pool from Deezer.
-    pool, source = _fetch_pool(artists)
+    import requests
+    from backend.deezer_client import DeezerError
+    try:
+        pool, source = _fetch_pool(artists)
+    except (DeezerError, requests.RequestException, Exception) as e:
+        import logging
+        logging.getLogger(__name__).error("Deezer API fetch failed: %s", str(e), exc_info=True)
+        raise HTTPException(
+            status_code=503,
+            detail="The music metadata provider is currently unreachable. Please check your network connection and try again later."
+        )
 
     # 2. Classify (batched Gemini, single API call).
     pool = _classify_pool(pool)

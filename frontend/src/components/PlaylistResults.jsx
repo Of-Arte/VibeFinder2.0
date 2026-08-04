@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import SongCard from './SongCard'
+import ErrorAlert from './ErrorAlert'
 
 export default function PlaylistResults({ result, onRestart }) {
   // Only one preview plays at a time — track the active card by index.
@@ -21,12 +22,7 @@ export default function PlaylistResults({ result, onRestart }) {
       </header>
 
       {degraded && (
-        <div className="degraded-banner" role="status">
-          <span className="degraded-icon" aria-hidden="true">⚠️</span>
-          <span>
-            AI personalization is temporarily unavailable, scores may look uniform. Try again shortly.
-          </span>
-        </div>
+        <ErrorAlert message="AI personalization is temporarily unavailable, scores may look uniform. Try again shortly." />
       )}
 
       {/* DJ Intro card */}

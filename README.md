@@ -1,7 +1,7 @@
 # VibeFinder 2.0: The AI DJ & Dynamic Profiler
 
-## Base Project Identification
 **Original Project:** VibeFinder 1.0
+
 **Original Summary:** VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
 ## Title and Summary
@@ -17,8 +17,6 @@ The system relies on an **Agentic Workflow** composed of three distinct LLM agen
 
 ## UI / UX — The User Flow
 
-Three screens, one trip from landing page to personalized playlist.
-
 <table>
   <tr>
     <th align="center">① Splash</th>
@@ -29,11 +27,6 @@ Three screens, one trip from landing page to personalized playlist.
     <td align="center"><img src="assets/mockups/01-splash-screen/mobile-default/screen.png" width="220" alt="Splash screen – mobile"></td>
     <td align="center"><img src="assets/mockups/02-artist-selection/mobile-selected/screen.png" width="220" alt="Artist selection – 3 selected"></td>
     <td align="center"><img src="assets/mockups/03-playlist-results/mobile-info-selected/screen.png" width="220" alt="Playlist results with track info expanded"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Name entry — never sent to any AI model</sub></td>
-    <td align="center"><sub>Curated list of 16 artists; pick 3 or more</sub></td>
-    <td align="center"><sub>DJ intro + ranked tracks with match reasoning</sub></td>
   </tr>
 </table>
 
@@ -188,3 +181,23 @@ Captured from `POST /api/recommend`.
 This project made me realize the complexities of combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
 *(See model_card.md for a deeper reflection on AI, ethics, and model biases).*
+
+## Documentation and References
+This project utilizes the following third-party libraries, tools, and APIs. Refer to their official documentation and Terms of Service (ToS) for usage policies:
+
+### Core APIs
+* **[Deezer API Documentation](https://developers.deezer.com/api)** - Music metadata retrieval and 30-second audio previews (no authentication required). Adheres to Deezer's developer terms.
+* **[Google Gemini API / Generative AI SDK](https://ai.google.dev/gemini-api/docs)** - Unified SDK used for batched track classification, vibe translation, and natural language DJ intros.
+
+### Backend (Python)
+* **[FastAPI](https://fastapi.tiangolo.com/)** - Modern, fast web framework for building APIs with Python.
+* **[Uvicorn](https://www.uvicorn.org/)** - ASGI server implementation for running FastAPI.
+* **[Pydantic](https://docs.pydantic.dev/)** - Data validation and settings management.
+* **[Requests](https://requests.readthedocs.io/)** - Simple and elegant HTTP library for Python.
+* **[python-dotenv](https://github.com/theofidry/python-dotenv)** - Loads environment variables from `.env`.
+* **[Pytest](https://docs.pytest.org/)** - Testing framework for Python.
+
+### Frontend (React & Build Tools)
+* **[React](https://react.dev/)** - JavaScript library for building user interfaces.
+* **[Vite](https://vite.dev/)** - Fast frontend build tool and development server.
+* **[Oxlint](https://github.com/oxc-project/oxc)** - Ultra-fast JavaScript/TypeScript linter.

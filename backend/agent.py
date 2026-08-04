@@ -79,14 +79,20 @@ _ARTIST_GENRE_MAP = {
 def _get_fallback_artist_genre(artist_name: str) -> str:
     """Resolve an artist name to a genre in degraded/fallback mode.
 
-    Looks up curated artist mapping first. For unmapped artists, deterministically
-    hashes the name onto ``_GENRES`` so fallback pools obtain distinct genres.
+    Looks up curated artist mapping first. Next, attempts dynamic lookup
+    via the Deezer API. If both fail, hashes the name onto ``_GENRES``.
     """
     clean_name = (artist_name or "").strip().lower()
     if clean_name in _ARTIST_GENRE_MAP:
         return _ARTIST_GENRE_MAP[clean_name]
     if not clean_name:
         return "pop"
+    
+    from backend import deezer_client
+    dynamic_genre = deezer_client.fetch_artist_genre(clean_name)
+    if dynamic_genre:
+        return dynamic_genre
+
     idx = int(_feature_hash(clean_name, "genre") * len(_GENRES)) % len(_GENRES)
     return _GENRES[idx]
 

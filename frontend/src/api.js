@@ -37,7 +37,9 @@ export async function fetchRecommendations(userName, selectedArtists) {
     } catch {
       /* non-JSON error body — keep the generic message */
     }
-    throw new Error(detail)
+    const err = new Error(detail)
+    err.status = response.status
+    throw err
   }
 
   return response.json()
