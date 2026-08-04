@@ -8,12 +8,18 @@
 **VibeFinder 2.0** evolves the static CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
 
 ## Architecture Overview
-The system relies on an **Agentic Workflow** composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine:
-1. **The Vibe Translator Agent**: Calculates the target algorithmic metrics (energy, mood, genre) from human inputs (artist names).
-2. **The Classifier Agent**: Classifies raw tracks pulled from the Deezer API, using a batched strategy to prevent rate limits.
-3. **The DJ Agent**: Generates a personalized intro and summarizes the final playlist into natural language commentary.
 
-*(See assets/diagrams/architecture.mmd for the full visual flow: Input -> Fetch -> Classifier -> Scorer -> DJ -> UI).*
+The system relies on an **Agentic Workflow** composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine.
+
+![Architecture: The Agentic Workflow](assets/slides/architecture_workflow.png)
+
+*(See [assets/diagrams/architecture.mmd](assets/diagrams/architecture.mmd) for the full visual flow).*
+
+### Recommendation Algorithm
+
+To rank tracks from the fetched artist catalog, the recommender calculates proximity scores in a multi-dimensional feature space (matching energy and valence against the target vibe).
+
+![From an Undifferentiated Pool to a Ranked Path](assets/slides/recommender_logic.png)
 
 ## UI / UX — The User Flow
 
@@ -166,15 +172,20 @@ Captured from `POST /api/recommend`.
 }
 ```
 
-## Design Decisions
-- **Agentic Workflow**: This project uses multiple LLM agents that handle distinct tasks: translation, classification, and text generation.
-- **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, I bundled the tracks into a single JSON array payload.
-- **Rate Limiting**: /api/recommend limits each IP to 3 playlist generations per rolling hour and returns HTTP 429 when exceeded.
-- **Artist Selection**: By restricting the user to selecting from a curated list of 16 real-world artists, I tried to prevent edge-case hallucinations and ensure the translator always has solid context to work from.
+## Reliability & Guardrails
 
-## Testing Summary
-- **Automated Testing**: The core scoring mathematical logic from src/recommender.py is fully covered by Pytest (test_recommender.py), ensuring that our backend integration did not break the VibeFinder 1.0 logic. 
-- **LLM Reliability**: By enforcing `response_mime_type="application/json"` and structuring the batched payload carefully, Gemini returned reliable JSON during local testing. A deterministic fallback system guarantees a valid response even when a Gemini call fails or returns malformed output.
+We implement three concrete engineering decisions to keep the system safe, predictable, and trustworthy:
+
+![Reliability & Guardrails](assets/slides/reliability_guardrails.png)
+
+1. **Graceful Degradation**: Every Gemini call has a deterministic fallback. A missing key or malformed JSON drops to a hash-based heuristic features and sets a degraded flag so the UI can warn the user.
+2. **Prompt-Injection Safety**: The name field is the only untrusted free text. LLMs only see the controlled vocabulary artist list.
+3. **Automated Testing**: Unit tests cover the core scoring logic and dedicated tests for the degraded-fallback path.
+*Additionally, we enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse.*
+
+## Design & API Decisions
+- **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, we bundle the tracks into a single JSON array payload.
+- **Artist Selection**: By restricting the user to selecting from a curated list of 16 real-world artists, we prevent edge-case hallucinations and ensure the translator always has solid context to work from.
 - **API Reliability**: The Deezer API requires no authentication keys, making the system immediately reproducible for anyone cloning the repository without additional credential setup.
 
 ## Reflection
@@ -183,21 +194,18 @@ This project made me realize the complexities of combining deterministic algorit
 *(See model_card.md for a deeper reflection on AI, ethics, and model biases).*
 
 ## Documentation and References
-This project utilizes the following third-party libraries, tools, and APIs. Refer to their official documentation and Terms of Service (ToS) for usage policies:
+This project utilizes the following third-party libraries, tools, and APIs.
 
-### Core APIs
-* **[Deezer API Documentation](https://developers.deezer.com/api)** - Music metadata retrieval and 30-second audio previews (no authentication required). Adheres to Deezer's developer terms.
-* **[Google Gemini API / Generative AI SDK](https://ai.google.dev/gemini-api/docs)** - Unified SDK used for batched track classification, vibe translation, and natural language DJ intros.
+### APIs
+* **[Deezer API Documentation](https://developers.deezer.com/api)** - Music metadata retrieval and 30-second audio previews.
+* **[Google Gemini API](https://ai.google.dev/gemini-api/docs)** - Used for batched track classification, vibe translation, and natural language DJ intros.
 
-### Backend (Python)
-* **[FastAPI](https://fastapi.tiangolo.com/)** - Modern, fast web framework for building APIs with Python.
-* **[Uvicorn](https://www.uvicorn.org/)** - ASGI server implementation for running FastAPI.
-* **[Pydantic](https://docs.pydantic.dev/)** - Data validation and settings management.
-* **[Requests](https://requests.readthedocs.io/)** - Simple and elegant HTTP library for Python.
-* **[python-dotenv](https://github.com/theofidry/python-dotenv)** - Loads environment variables from `.env`.
-* **[Pytest](https://docs.pytest.org/)** - Testing framework for Python.
+### Backend
+* **[FastAPI](https://fastapi.tiangolo.com/)** - Python web framework for building APIs.
+* **[Uvicorn](https://www.uvicorn.org/)** - Server implementation for running FastAPI.
+* **[Pytest](https://docs.pytest.org/)** - Python testing framework.
 
-### Frontend (React & Build Tools)
-* **[React](https://react.dev/)** - JavaScript library for building user interfaces.
-* **[Vite](https://vite.dev/)** - Fast frontend build tool and development server.
-* **[Oxlint](https://github.com/oxc-project/oxc)** - Ultra-fast JavaScript/TypeScript linter.
+### Frontend
+* **[React](https://react.dev/)** - JS library for building user interfaces.
+* **[Vite](https://vite.dev/)** - Build tool and dev server for frontend.
+* **[Oxlint](https://github.com/oxc-project/oxc)** - JS/TS linter.
