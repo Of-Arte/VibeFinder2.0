@@ -348,7 +348,76 @@ def classify_tracks_batch(unclassified_tracks_list: List[Dict]) -> List[Dict]:
 # --------------------------------------------------------------------------
 # Agent 2: Vibe Translator
 # --------------------------------------------------------------------------
-def translate_artists_to_prefs(artists: List[str]) -> Dict:
+def _calculate_fallback_target_vibe(artists: List[str], pool: List[Dict]) -> Dict:
+    """
+    Compute the user's target vibe profile from the features of the tracks in the pool
+    that match the selected artists.
+    """
+    from collections import Counter
+
+    # Filter pool to tracks belonging to selected artists
+    selected_set = {a.strip().lower() for a in artists}
+    matching_tracks = [
+        t for t in pool
+        if t.get("artist", "").strip().lower() in selected_set
+    ]
+    # If no matches, fallback to the entire pool
+    if not matching_tracks:
+        matching_tracks = pool
+
+    if not matching_tracks:
+        # Final fallback if pool is empty
+        fallback_genre = _get_fallback_artist_genre(artists[0] if artists else "")
+        return {
+            "favorite_genre": fallback_genre,
+            "favorite_mood": "happy",
+            "target_energy": 0.6,
+            "likes_acoustic": False,
+            "target_valence": 0.6,
+            "target_danceability": 0.6,
+            "target_acousticness": 0.3,
+            "target_tempo_bpm": 118.0,
+        }
+
+    # Extract genres and moods
+    genres = [t.get("genre") for t in matching_tracks if t.get("genre")]
+    moods = [t.get("mood") for t in matching_tracks if t.get("mood")]
+
+    if genres:
+        favorite_genre, _ = Counter(genres).most_common(1)[0]
+    else:
+        favorite_genre = _get_fallback_artist_genre(artists[0] if artists else "")
+
+    if moods:
+        favorite_mood, _ = Counter(moods).most_common(1)[0]
+    else:
+        favorite_mood = "happy"
+
+    energies = [float(t.get("energy", 0.5)) for t in matching_tracks]
+    valences = [float(t.get("valence", 0.5)) for t in matching_tracks]
+    danceabilities = [float(t.get("danceability", 0.5)) for t in matching_tracks]
+    acousticnesses = [float(t.get("acousticness", 0.5)) for t in matching_tracks]
+    tempos = [float(t.get("tempo_bpm", 110.0)) for t in matching_tracks]
+
+    target_energy = round(sum(energies) / len(energies), 3)
+    target_valence = round(sum(valences) / len(valences), 3)
+    target_danceability = round(sum(danceabilities) / len(danceabilities), 3)
+    target_acousticness = round(sum(acousticnesses) / len(acousticnesses), 3)
+    target_tempo_bpm = round(sum(tempos) / len(tempos), 1)
+
+    return {
+        "favorite_genre": favorite_genre,
+        "favorite_mood": favorite_mood,
+        "target_energy": target_energy,
+        "likes_acoustic": target_acousticness >= 0.5,
+        "target_valence": target_valence,
+        "target_danceability": target_danceability,
+        "target_acousticness": target_acousticness,
+        "target_tempo_bpm": target_tempo_bpm,
+    }
+
+
+def translate_artists_to_prefs(artists: List[str], pool: List[Dict] = None) -> Dict:
     """
     Infer the user's target vibe from their selected artists.
 
@@ -397,8 +466,11 @@ def translate_artists_to_prefs(artists: List[str]) -> Dict:
             "target_tempo_bpm": tempo,
         }
 
-    # Deterministic fallback: profile anchored to user's selected artists.
+    # Deterministic fallback: profile calculated via algorithm from the pool
     mark_degraded("vibe translation fell back to the default artist-derived profile")
+    if pool:
+        return _calculate_fallback_target_vibe(artists, pool)
+
     fallback_genre = _get_fallback_artist_genre(artists[0] if artists else "")
     return {
         "favorite_genre": fallback_genre,

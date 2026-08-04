@@ -172,7 +172,7 @@ def recommend(req: RecommendRequest, request: Request):
     pool = _classify_pool(pool)
 
     # 3. Translate artist picks -> target vibe (Gemini vibe translator).
-    target_vibe = agent.translate_artists_to_prefs(artists)
+    target_vibe = agent.translate_artists_to_prefs(artists, pool)
 
     # 4. Score against the recommender core and take the top 5.
     playlist = _score_pool(pool, target_vibe, k=5)
