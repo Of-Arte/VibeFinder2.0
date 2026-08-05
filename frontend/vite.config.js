@@ -9,7 +9,7 @@ export default defineConfig({
     proxy: {
       // Forward API calls to the FastAPI backend during development.
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
       },
     },
