@@ -49,3 +49,14 @@ jobs:
 
       - name: Run linter
         run: npm run lint
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create dummy .env file
+        run: touch .env
+
+      - name: Build Docker Compose services
+        run: docker compose build
