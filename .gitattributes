@@ -1,0 +1,4 @@
+# Tell Linguist to ignore these paths for language stats
+assets/** linguist-vendored
+*.html linguist-vendored
+assets/mockups/** linguist-documentation
