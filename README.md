@@ -40,38 +40,40 @@ To rank tracks from the fetched artist catalog, the recommender calculates proxi
 
 ## Setup Instructions
 
-### 1. Backend (FastAPI)
-1. From the **project root** (the backend runs as the `backend` package, so do not `cd` into it):
-2. Create and activate a virtual environment:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # macOS/Linux
-   # or .venv\Scripts\activate on Windows
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Create a `.env` file in the root directory:
+### Option 1: Docker (Fastest Setup)
+Ensure Docker is installed and running, then:
+1. Create a `.env` file in the root directory:
    ```text
    GEMINI_API_KEY=your_gemini_api_key
    ```
-5. Start the server:
+2. Build and start the application in one command:
    ```bash
+   docker compose up --build
+   ```
+3. Open `http://localhost:5173` in your browser.
+
+### Option 2: Manual Setup (Local Development)
+1. **Configure Environment Variables**:
+   Create a `.env` file in the project root:
+   ```text
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+2. **Install Dependencies & Start Backend**:
+   Run the following from the project root:
+   ```bash
+   python -m venv .venv
+   # Activate: source .venv/bin/activate (macOS/Linux) or .venv\Scripts\activate (Windows)
+   pip install -r requirements.txt
    python -m uvicorn backend.server:app --reload --port 8000
    ```
 
-### 2. Frontend (React + Vite)
-1. Open a new terminal and navigate to the frontend: `cd frontend`
-2. Install dependencies:
+3. **Install Dependencies & Start Frontend**:
+   In a new terminal window, run the following:
    ```bash
-   npm install
+   cd frontend && npm install && npm run dev
    ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-4. Open the provided localhost link (usually `http://localhost:5173`) in your browser.
+4. Open `http://localhost:5173` in your browser.
 
 ## Sample Interactions (Execution Evidence)
 
