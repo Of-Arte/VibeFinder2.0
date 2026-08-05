@@ -58,7 +58,7 @@ To rank tracks from the fetched artist catalog, the recommender calculates proxi
    ```
 5. Start the server:
    ```bash
-   uvicorn backend.server:app --reload --port 8000
+   python -m uvicorn backend.server:app --reload --port 8000
    ```
 
 ### 2. Frontend (React + Vite)
