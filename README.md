@@ -215,10 +215,15 @@ We implement three concrete engineering decisions to keep the system safe, predi
 ## Reflection
 This project made me realize the complexities of combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
-*(See model_card.md for a deeper reflection on AI, ethics, and model biases).*
+*(See [model_card.md](model_card.md) for a deeper reflection on AI, ethics, and model biases).*
 
 ## Documentation and References
 This project utilizes the following third-party libraries, tools, and APIs.
+
+### Project Documentation
+* **[AI Interactions Log](ai_interactions.md)** - Reasoning traces and sample LLM conversations.
+* **[Model Card & Ethical Reflection](model_card.md)** - Model details, evaluation metrics, and reflection on AI ethics.
+
 
 ### APIs
 * **[Deezer API Documentation](https://developers.deezer.com/api)** - Music metadata retrieval and 30-second audio previews.

@@ -70,7 +70,7 @@
 The LLM classifier is a key component created to test replacing paid third-party music APIs after encountering access friction. Because the classifier estimates song attributes from titles and artists instead of listening to raw audio, it can mislabel obscure songs. Additionally, the track pool retrieved from public APIs favors mainstream artists, creating a bias toward popular music.
 
 ## Misuse and Prevention
-- **Misuse Case**: An AI that dynamically generates recommendations based on user inputs could be tricked via prompt injection into generating inappropriate, hateful, or off-brand content if untrusted free-text (such as the user's name or song title) were fed into the prompt.
+- **Misuse Case**: An AI that dynamically generates recommendations based on user inputs could be tricked into generating inappropriate, hateful, or off-brand content if untrusted free-text were fed into the prompt.
 - **Prevention**: We keep untrusted text out of the LLM prompts as much as possible. The only free-text field is the user's name, and it is never sent to any Gemini call. Everything that reaches the model is from a fixed curated list of options, so the model always has safe context. Finally, all Gemini calls use strict JSON output and Pydantic validation, which acts as a guardrail against the LLM breaking out of its classification role.
 
 ## Surprises
