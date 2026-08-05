@@ -6,35 +6,6 @@ The system uses a multi-agent orchestration architecture where three specialized
 
 ---
 
-## Architecture Flow & Agent Responsibilities
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant App as FastAPI Backend
-    participant Agent1 as Agent 1: Vibe Translator
-    participant Deezer as Deezer API
-    participant Agent2 as Agent 2: Batched Classifier
-    participant Engine as Recommender Scoring Engine
-    participant Agent3 as Agent 3: DJ Intro Generator
-
-    User->>App: POST /api/recommend (selected_artists, user_name)
-    App->>Agent1: translate_artists_to_prefs(selected_artists)
-    Agent1-->>App: Target Vibe Profile (JSON vector)
-    App->>Deezer: Fetch candidate tracks for artists
-    Deezer-->>App: Raw candidate track pool (title, artist, rank)
-    App->>Agent2: classify_tracks_batch(candidate_tracks)
-    Agent2-->>App: Multi-dimensional Track Features (JSON Array)
-    App->>Engine: score_song(Target Vibe Profile, Track Features)
-    Engine-->>App: Ranked Playlist & Scoring Explanations
-    App->>Agent3: generate_dj_intro(artists, top_track)
-    Agent3-->>App: Radio DJ Intro Text (JSON)
-    App-->>User: Complete Playlist Payload + DJ Intro
-```
-
----
-
 ## Scenario 1: Acoustic / Chill Folk Profile
 
 ### Trace Highlights:
