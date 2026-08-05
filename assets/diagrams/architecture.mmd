@@ -1,6 +1,6 @@
 graph TD
     User([User]) -->|Inputs Name & Picks Artists| React["React Frontend (Vite)"]
-    React -->|"POST /api/recommend (rate limited: 3 / window)"| FastAPI["FastAPI Backend"]
+    React -->|"POST /api/recommend (rate limited: 10 / 60s)"| FastAPI["FastAPI Backend"]
 
     FastAPI -->|1. Artist Picks| Fetcher["Deezer Client (keyless)"]
     Fetcher -->|top + related tracks| RawPool["Raw Track Pool (30-50 songs)"]

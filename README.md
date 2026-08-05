@@ -205,7 +205,7 @@ We implement three concrete engineering decisions to keep the system safe, predi
 3. **Automated Testing**: Unit tests cover the scoring logic and dedicated tests for the degraded-fallback path.
 
 > [!NOTE]
-> We enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse. (See **`backend/config.py`**)
+> We enforce a rate limit of 10 requests per minute per IP to prevent overloading the backend with too many requests. (See **`backend/config.py`**)
 
 ## Design & API Decisions
 - **Batched Classification**: To avoid hitting rate limits while using Gemini API, we bundle the tracks into a single JSON array payload.
@@ -213,7 +213,7 @@ We implement three concrete engineering decisions to keep the system safe, predi
 - **API Reliability**: The Deezer API requires no authentication keys, making the system easily accessible to anyone connecting to the application.
 
 ## Reflection
-This project helped me gain a deeper unstanding of the complexity in combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
+This project helped me gain a deeper unstanding of the complexity in combining deterministic algorithms with non-deterministic LLMs. Balancing functionality and scalability is a challenge that forces constant tradeoffs. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
 *(See [model_card.md](model_card.md) for a deeper reflection on AI, ethics, and model biases).*
 

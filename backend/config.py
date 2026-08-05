@@ -36,11 +36,12 @@ CLASSIFY_MAX_OUTPUT_TOKENS = int(os.getenv("CLASSIFY_MAX_OUTPUT_TOKENS", "4096")
 PROJECT_ROOT = _PROJECT_ROOT
 
 # --- Rate limiting ---------------------------------------------------------
-# The recommendation pipeline is expensive (multiple Gemini calls), so each
-# client may generate a playlist only a handful of times per rolling window
-# before being throttled with HTTP 429. Override via env vars if needed.
-RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "3"))
-RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "3600"))
+# To prevent overloading our backend or the external Deezer and Gemini APIs
+# with too many requests at once, each client's requests are rate-limited.
+# Since demo users supply their own API keys and there are no user accounts,
+# this acts as a rate-limiting safety guardrail rather than a cost control.
+RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "10"))
+RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
 
 # --- CORS ------------------------------------------------------------------
 # Vite dev server default origin(s).

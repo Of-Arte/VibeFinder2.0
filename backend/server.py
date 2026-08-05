@@ -133,9 +133,8 @@ def health() -> Dict:
 @app.post("/api/recommend", response_model=RecommendResponse)
 def recommend(req: RecommendRequest, request: Request):
     """Full recommendation pipeline for a set of selected artists."""
-    # 0. Per-client rate limit: the pipeline makes several Gemini calls, so
-    #    each client may generate only RATE_LIMIT_MAX_REQUESTS playlists per
-    #    rolling window before being throttled.
+    # 0. Per-client rate limit: avoid sending too many requests at once to Deezer,
+    #    Gemini, or our backend server.
     client_id = request.client.host if request.client else "unknown"
     if not ratelimit.check(client_id):
         return JSONResponse(
@@ -144,8 +143,9 @@ def recommend(req: RecommendRequest, request: Request):
                 "detail": (
                     f"Rate limit reached. You can generate up to "
                     f"{config.RATE_LIMIT_MAX_REQUESTS} playlists per "
-                    f"{config.RATE_LIMIT_WINDOW_SECONDS // 60} minutes. "
-                    f"Please try again later."
+                    f"{config.RATE_LIMIT_WINDOW_SECONDS} seconds to prevent "
+                    f"overloading the backend and external APIs. "
+                    f"Please try again in a moment."
                 )
             },
         )

@@ -1,10 +1,10 @@
 """
 Lightweight in-memory, per-client rate limiter.
 
-Caps how many times a single client (keyed by IP) can hit the expensive
-recommendation pipeline within a rolling time window. This is a cost guardrail
-against Gemini's free-tier limits, not a security control — state lives in
-process memory and resets whenever the server restarts.
+Caps how many times a single client (keyed by IP) can hit the pipeline
+within a rolling time window. This is a stability guardrail to avoid sending
+too many requests at once to Deezer, Gemini, or our backend server. 
+State lives in process memory and resets whenever the server restarts.
 """
 import threading
 import time
