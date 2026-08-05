@@ -7,9 +7,9 @@
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-supported-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-> Original Summary: VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
+> VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
-**VibeFinder 2.0** evolves the static CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
+**VibeFinder 2.0** evolves the CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
 
 ## Architecture Overview
 
@@ -17,7 +17,7 @@ The system relies on an **Agentic Workflow** composed of three distinct LLM agen
 
 ![Architecture: The Agentic Workflow](assets/slides/architecture_workflow.png)
 
-*(See [assets/diagrams/architecture.mmd](assets/diagrams/architecture.mmd) for the full visual flow).*
+*(See [assets/diagrams/architecture.mmd](assets/diagrams/architecture.mmd) for the full visual flow and [ai_interactions.md](ai_interactions.md) for step-by-step intermediate reasoning traces).*
 
 ### Recommendation Algorithm
 
