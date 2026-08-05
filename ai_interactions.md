@@ -1,14 +1,12 @@
-# AI Interactions & Intermediate Agent Reasoning Traces
+# AI Interactions & Agent Reasoning 
 
-This document records the reasoning traces, prompt structures, payload analysis, and execution flow for VibeFinder 2.0.
+This document records the reasoning traces, outputs, and execution flow for VibeFinder 2.0.
 
-The system uses a multi-agent orchestration architecture where three specialized LLM agent calls interact sequentially with an external API and a deterministic proximity scoring engine.
+The system uses a multi-agent architecture where three LLM agent calls interact with an external API and a deterministic proximity scoring engine.
 
 ---
 
 ## Scenario 1: Acoustic / Chill Folk Profile
-
-### Trace Highlights:
 
 1. **Agent 1 (Vibe Translator)**:
    - Input: `["Fleet Foxes", "Bob Marley", "Taylor Swift"]`

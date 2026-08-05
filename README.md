@@ -9,11 +9,11 @@
 
 > VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
-**VibeFinder 2.0** evolves the CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
+**VibeFinder 2.0** evolves the CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the ranked playlist.
 
 ## Architecture Overview
 
-The system relies on an **Agentic Workflow** composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine.
+The system relies on an agentic workflow composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine.
 
 ![Architecture: The Agentic Workflow](assets/slides/architecture_workflow.png)
 
@@ -21,7 +21,7 @@ The system relies on an **Agentic Workflow** composed of three distinct LLM agen
 
 ### Recommendation Algorithm
 
-To rank tracks from the fetched artist catalog, the recommender calculates proximity scores in a multi-dimensional feature space (matching energy and valence against the target vibe).
+To rank tracks from the fetched artist catalog, the recommender calculates proximity scores in a proximity-based feature space, using genre, mood, energy, tempo, valence, danceability, and acousticness to determine the best matches.
 
 ![From an Undifferentiated Pool to a Ranked Path](assets/slides/recommender_logic.png)
 
@@ -200,20 +200,20 @@ We implement three concrete engineering decisions to keep the system safe, predi
 
 ![Reliability & Guardrails](assets/slides/reliability_guardrails.png)
 
-1. **Graceful Degradation**: Every Gemini call has a deterministic fallback. A missing key or malformed JSON drops to a hash-based heuristic features and sets a degraded flag so the UI can warn the user.
-2. **Prompt-Injection Safety**: The name field is the only untrusted free text. LLMs only see the controlled vocabulary artist list.
-3. **Automated Testing**: Unit tests cover the core scoring logic and dedicated tests for the degraded-fallback path.
+1. **Graceful Degradation**: Every Gemini call has a deterministic fallback. A missing key or malformed JSON sets a degraded flag so the UI can warn the user.
+2. **Prompt-Injection Safety**: The name field is the only untrusted free text. LLMs only see the artist list.
+3. **Automated Testing**: Unit tests cover the scoring logic and dedicated tests for the degraded-fallback path.
 
 > [!NOTE]
-> We enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse.
+> We enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse. (See **`backend/config.py`**)
 
 ## Design & API Decisions
-- **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, we bundle the tracks into a single JSON array payload.
-- **Artist Selection**: By restricting the user to selecting from a curated list of 16 real-world artists, we prevent edge-case hallucinations and ensure the translator always has solid context to work from.
-- **API Reliability**: The Deezer API requires no authentication keys, making the system immediately reproducible for anyone cloning the repository without additional credential setup.
+- **Batched Classification**: To avoid hitting rate limits while using Gemini API, we bundle the tracks into a single JSON array payload.
+- **Artist Selection**: By restricting the user to selecting from a curated list of 16 artists, we ensure the translator always has solid context to work from.
+- **API Reliability**: The Deezer API requires no authentication keys, making the system easily accessible to anyone connecting to the application.
 
 ## Reflection
-This project made me realize the complexities of combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
+This project helped me gain a deeper unstanding of the complexity in combining deterministic algorithms with non-deterministic LLMs. I learned that rate limits are a major constraint, forcing creative architecture and engineering solutions. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
 *(See [model_card.md](model_card.md) for a deeper reflection on AI, ethics, and model biases).*
 
