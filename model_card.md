@@ -1,7 +1,7 @@
 # VibeFinder 2.0 — Model Card & Specialization Report
 
 ## Model Overview
-- **Model**: `gemini-flash-latest` via `google-generativeai` SDK
+- **Model**: `gemini-flash-lite-latest` via `google-generativeai` SDK
 - **Task**: Multi-agent music preference inference, batched track feature classification, and personalized radio DJ intro generation.
 - **Orchestration**: Three specialized agent functions operating with JSON response mode (`response_mime_type="application/json"`, `temperature=0.4`).
 
@@ -27,7 +27,7 @@
 
   [Target Execution]
   Input: ["Kendrick Lamar", "The Weeknd"]
-  Output:
+  Output: {"favorite_genre": "hip hop", "favorite_mood": "intense", "target_energy": 0.75, "likes_acoustic": false, "target_valence": 0.55, "target_danceability": 0.65, "target_acousticness": 0.15, "target_tempo_bpm": 120}
   ```
 
 #### 2. Agent 2: Song Classifier
@@ -48,6 +48,24 @@
   ]
   ```
 
+#### 3. Agent 3: DJ Intro
+* **Goal**: Write a short, personalized DJ intro for the curated playlist that references the selected artists and the top track.
+* **Prompt Exemplar Pattern**:
+  ```text
+  Write a 2-3 sentence custom radio DJ intro for a listener based on their love for [Artists]. Do NOT address the listener by name or invent a name; speak to them generically (e.g. "you"). Mention they are about to hear "[Top Title]". Keep it under 60 words. Return ONLY the intro text as a JSON object: {"intro": "..."}
+
+  [Example Input]
+  Artists: ["Daft Punk", "Justice"]
+  Top Title: "Get Lucky"
+
+  [Example Output]
+  {"intro": "You're locked in to VibeFinder Radio! We're serving up a high-energy mix inspired by your love for Daft Punk and Justice. Up first is the legendary track \"Get Lucky\"—turn up the volume!"}
+
+  [Target Execution]
+  Input: ["Kendrick Lamar", "The Weeknd"] (Top Title: "Starboy")
+  Output: {"intro": "If you've been craving that masterclass lyricism from Kendrick and the dark, hypnotic grooves of The Weeknd, you're in the right place. Turn it up because you're about to hear 'Starboy'."}
+  ```
+
 ---
 
 ### Output Analysis
@@ -58,7 +76,7 @@
   ```text
   "Sure! Here is the analysis for Get Lucky by Daft Punk: The song is energetic (around 8/10) with a funk-pop vibe and happy mood. Tempo is pretty fast."
   ```
-  *Issue*: Unparseable plain text, non-standard genre string (`funk-pop`), unnormalized scale (`8/10`).
+  *Issue*: Unparseable plain text, non-standard genre (`funk-pop`), unnormalized scale (`8/10`).
 
 - **Specialized Gemini Output**:
   ```json
