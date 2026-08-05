@@ -1,0 +1,245 @@
+{
+  "timestamp": "2026-08-05T03:48:51Z",
+  "mode": "mock",
+  "scenarios_evaluated": 7,
+  "metrics": {
+    "mean_total_latency_ms": 1096.34,
+    "mean_vibe_alignment": 0.8571,
+    "mean_feature_diversity": 0.1324,
+    "degradation_rate_percent": 100.0,
+    "system_health_score": 56.4
+  },
+  "details": [
+    {
+      "scenario_id": "pop_mainstream",
+      "scenario_name": "Pop & Mainstream",
+      "artists": [
+        "Taylor Swift",
+        "Dua Lipa",
+        "Billie Eilish"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "pop",
+        "favorite_mood": "happy",
+        "target_energy": 0.728,
+        "likes_acoustic": true,
+        "target_valence": 0.525,
+        "target_danceability": 0.668,
+        "target_acousticness": 0.564,
+        "target_tempo_bpm": 136.0
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for Taylor Swift, Dua Lipa, Billie Eilish and lined up a set made just for you. First up: \"Bad Guy\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8537,
+      "diversity": 0.1511,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1137.08,
+        "vibe_translation": 0.65,
+        "scoring": 0.14,
+        "dj_intro": 0.33,
+        "total": 1138.21
+      }
+    },
+    {
+      "scenario_id": "electronic_dance",
+      "scenario_name": "Electronic & Dance",
+      "artists": [
+        "Daft Punk",
+        "Justice",
+        "Calvin Harris"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "edm",
+        "favorite_mood": "intense",
+        "target_energy": 0.704,
+        "likes_acoustic": false,
+        "target_valence": 0.282,
+        "target_danceability": 0.645,
+        "target_acousticness": 0.185,
+        "target_tempo_bpm": 122.0
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for Daft Punk, Justice, Calvin Harris and lined up a set made just for you. First up: \"One More Time\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8535,
+      "diversity": 0.1352,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1153.83,
+        "vibe_translation": 0.65,
+        "scoring": 0.11,
+        "dj_intro": 0.31,
+        "total": 1154.9
+      }
+    },
+    {
+      "scenario_id": "rock_metal",
+      "scenario_name": "Rock & Metal",
+      "artists": [
+        "Iron Maiden",
+        "Radiohead",
+        "Arctic Monkeys"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "rock",
+        "favorite_mood": "intense",
+        "target_energy": 0.662,
+        "likes_acoustic": false,
+        "target_valence": 0.284,
+        "target_danceability": 0.788,
+        "target_acousticness": 0.401,
+        "target_tempo_bpm": 106.7
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for Iron Maiden, Radiohead, Arctic Monkeys and lined up a set made just for you. First up: \"Karma Police\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8633,
+      "diversity": 0.1272,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1078.45,
+        "vibe_translation": 0.58,
+        "scoring": 0.12,
+        "dj_intro": 0.32,
+        "total": 1079.48
+      }
+    },
+    {
+      "scenario_id": "jazz_lofi",
+      "scenario_name": "Jazz & Lofi",
+      "artists": [
+        "Miles Davis",
+        "Nujabes"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "jazz",
+        "favorite_mood": "intense",
+        "target_energy": 0.879,
+        "likes_acoustic": false,
+        "target_valence": 0.13,
+        "target_danceability": 0.696,
+        "target_acousticness": 0.374,
+        "target_tempo_bpm": 114.0
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for Miles Davis, Nujabes and lined up a set made just for you. First up: \"So What\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8742,
+      "diversity": 0.1071,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1063.84,
+        "vibe_translation": 0.57,
+        "scoring": 0.11,
+        "dj_intro": 0.34,
+        "total": 1064.86
+      }
+    },
+    {
+      "scenario_id": "cross_genre",
+      "scenario_name": "Cross-Genre Blend",
+      "artists": [
+        "Daft Punk",
+        "Miles Davis",
+        "Taylor Swift"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "pop",
+        "favorite_mood": "intense",
+        "target_energy": 0.754,
+        "likes_acoustic": false,
+        "target_valence": 0.275,
+        "target_danceability": 0.7,
+        "target_acousticness": 0.329,
+        "target_tempo_bpm": 143.0
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for Daft Punk, Miles Davis, Taylor Swift and lined up a set made just for you. First up: \"Levitating\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8534,
+      "diversity": 0.1336,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1065.52,
+        "vibe_translation": 0.58,
+        "scoring": 0.12,
+        "dj_intro": 0.35,
+        "total": 1066.58
+      }
+    },
+    {
+      "scenario_id": "single_artist",
+      "scenario_name": "Single Artist Focus",
+      "artists": [
+        "The Weeknd"
+      ],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "pop",
+        "favorite_mood": "intense",
+        "target_energy": 0.608,
+        "likes_acoustic": true,
+        "target_valence": 0.175,
+        "target_danceability": 0.815,
+        "target_acousticness": 0.671,
+        "target_tempo_bpm": 171.0
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for The Weeknd and lined up a set made just for you. First up: \"Blinding Lights\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8517,
+      "diversity": 0.1237,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1058.03,
+        "vibe_translation": 0.55,
+        "scoring": 0.13,
+        "dj_intro": 0.36,
+        "total": 1059.08
+      }
+    },
+    {
+      "scenario_id": "edge_case_empty",
+      "scenario_name": "Edge Case - Empty Input",
+      "artists": [],
+      "source": "deezer_mock",
+      "pool_size": 12,
+      "playlist_size": 5,
+      "target_vibe": {
+        "favorite_genre": "pop",
+        "favorite_mood": "intense",
+        "target_energy": 0.72,
+        "likes_acoustic": false,
+        "target_valence": 0.309,
+        "target_danceability": 0.709,
+        "target_acousticness": 0.406,
+        "target_tempo_bpm": 124.4
+      },
+      "dj_intro": "Welcome to VibeFinder Radio! We tuned into your love for  and lined up a set made just for you. First up: \"Levitating\" \u2014 turn it up.",
+      "degraded": true,
+      "vibe_alignment": 0.8502,
+      "diversity": 0.1488,
+      "latency_ms": {
+        "fetch": 0.0,
+        "classify": 1110.3,
+        "vibe_translation": 0.54,
+        "scoring": 0.11,
+        "dj_intro": 0.32,
+        "total": 1111.26
+      }
+    }
+  ]
+}
