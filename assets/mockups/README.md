@@ -1,45 +1,42 @@
 # VibeFinder UI/UX Design System & Mockup Catalog
 
-This directory contains the original UI design specifications, interactive mockups, HTML prototypes, and screen renders for **VibeFinder 2.0**.
+This directory contains the original UI design specifications, interactive mockups, and screen renders for **VibeFinder 2.0**.
 
 ---
 
 ## 1. Directory Hierarchy & User Flow Architecture
 
-The mockups are organized by **user journey flow stages**, covering both mobile and desktop viewports alongside state variations (initial, active/selected, pressed, detail modal).
+The mockups are organized directly under this directory, covering both mobile and desktop viewports alongside state variations (initial, active/selected, pressed, detail modal).
 
 ```
 assets/mockups/
 ├── README.md                          <- Master Visual Catalog & Design Tokens
-├── 01-splash-screen/                  <- Step 0: Landing / Brand Entry Point
-│   ├── mobile-default/                (HTML + PNG render for mobile hero)
-│   ├── mobile-pressed/                (HTML + PNG render for CTA interaction state)
-│   └── desktop-default/               (HTML + PNG render for desktop widescreen hero)
-├── 02-artist-selection/               <- Step 1: User Onboarding & Taste Input
-│   ├── mobile-initial/                (HTML + PNG render for unselected artist grid)
-│   ├── mobile-selected/               (HTML + PNG render for active artist selection)
-│   └── desktop-5-selected/            (HTML + PNG render for desktop widescreen grid)
-└── 03-playlist-results/               <- Step 2: Gemini DJ Intro & Playlist Output
-    ├── mobile-default/                (HTML + PNG render for mobile recommendations)
-    ├── mobile-info-selected/           (HTML + PNG render for track explanation modal)
-    └── desktop-default/               (HTML + PNG render for desktop recommendations)
+├── onboarding-desktop.png             <- Desktop Taste Input (5 selected)
+├── onboarding-mobile-initial.png      <- Mobile Taste Input (Initial State)
+├── onboarding-mobile-selected.png     <- Mobile Taste Input (Selected State)
+├── results-desktop.png                <- Desktop Recommendations
+├── results-mobile-modal.png           <- Mobile Track Details Modal
+├── results-mobile.png                 <- Mobile Recommendations
+├── splash-desktop.png                 <- Desktop Landing Screen
+├── splash-mobile-pressed.png          <- Mobile Landing Screen (Pressed CTA State)
+└── splash-mobile.png                  <- Mobile Landing Screen (Default)
 ```
 
 ---
 
 ## 2. Visual Catalog & Screen Reference
 
-| Flow Stage | Viewport | State / Variant | Screen Preview | Source Code |
-| :--- | :--- | :--- | :--- | :--- |
-| **Splash Screen** | Mobile | Default / Hero | ![Mobile Splash Screen](01-splash-screen/mobile-default/screen.png) | [code.html](01-splash-screen/mobile-default/code.html) |
-| **Splash Screen** | Mobile | Pressed CTA State | ![Mobile Splash Pressed](01-splash-screen/mobile-pressed/screen.png) | [code.html](01-splash-screen/mobile-pressed/code.html) |
-| **Splash Screen** | Desktop | Widescreen Hero | ![Desktop Splash Screen](01-splash-screen/desktop-default/screen.png) | [code.html](01-splash-screen/desktop-default/code.html) |
-| **Artist Selection** | Mobile | Initial (Unselected) | ![Mobile Artist Selection Initial](02-artist-selection/mobile-initial/screen.png) | [code.html](02-artist-selection/mobile-initial/code.html) |
-| **Artist Selection** | Mobile | Active Selection | ![Mobile Artist Selection Selected](02-artist-selection/mobile-selected/screen.png) | [code.html](02-artist-selection/mobile-selected/code.html) |
-| **Artist Selection** | Desktop | 5 Artists Selected | ![Desktop Artist Selection](02-artist-selection/desktop-5-selected/screen.png) | [code.html](02-artist-selection/desktop-5-selected/code.html) |
-| **Playlist Results**| Mobile | Results & DJ Card | ![Mobile Personalized Playlist](03-playlist-results/mobile-default/screen.png) | [code.html](03-playlist-results/mobile-default/code.html) |
-| **Playlist Results**| Mobile | Track Info Modal | ![Mobile Playlist Info Selected](03-playlist-results/mobile-info-selected/screen.png) | [code.html](03-playlist-results/mobile-info-selected/code.html) |
-| **Playlist Results**| Desktop | Widescreen Results | ![Desktop Personalized Playlist](03-playlist-results/desktop-default/screen.png) | [code.html](03-playlist-results/desktop-default/code.html) |
+| Flow Stage | Viewport | State / Variant | Screen Preview |
+| :--- | :--- | :--- | :--- |
+| **Splash Screen** | Mobile | Default / Hero | <img src="splash-mobile.png" width="200" alt="Mobile Splash Screen" /> |
+| **Splash Screen** | Mobile | Pressed CTA State | <img src="splash-mobile-pressed.png" width="200" alt="Mobile Splash Pressed" /> |
+| **Splash Screen** | Desktop | Widescreen Hero | <img src="splash-desktop.png" width="350" alt="Desktop Splash Screen" /> |
+| **Artist Selection** | Mobile | Initial (Unselected) | <img src="onboarding-mobile-initial.png" width="200" alt="Mobile Artist Selection Initial" /> |
+| **Artist Selection** | Mobile | Active Selection | <img src="onboarding-mobile-selected.png" width="200" alt="Mobile Artist Selection Selected" /> |
+| **Artist Selection** | Desktop | 5 Artists Selected | <img src="onboarding-desktop.png" width="350" alt="Desktop Artist Selection" /> |
+| **Playlist Results** | Mobile | Results & DJ Card | <img src="results-mobile.png" width="200" alt="Mobile Personalized Playlist" /> |
+| **Playlist Results** | Mobile | Track Info Modal | <img src="results-mobile-modal.png" width="200" alt="Mobile Playlist Info Selected" /> |
+| **Playlist Results** | Desktop | Widescreen Results | <img src="results-desktop.png" width="350" alt="Desktop Personalized Playlist" /> |
 
 ---
 

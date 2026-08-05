@@ -1,10 +1,14 @@
 # VibeFinder 2.0: The AI DJ & Dynamic Profiler
 
-**Original Project:** VibeFinder 1.0
+[![Tests](https://github.com/Of-Arte/VibeFinder2.0/actions/workflows/tests.yml/badge.svg)](https://github.com/Of-Arte/VibeFinder2.0/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/Python-3.12+-blue?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-supported-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-**Original Summary:** VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
+> Original Summary: VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
-## Title and Summary
 **VibeFinder 2.0** evolves the static CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the mathematically ranked playlist.
 
 ## Architecture Overview
@@ -30,13 +34,13 @@ To rank tracks from the fetched artist catalog, the recommender calculates proxi
     <th align="center">③ Playlist + DJ Intro</th>
   </tr>
   <tr>
-    <td align="center"><img src="assets/mockups/01-splash-screen/mobile-default/screen.png" width="220" alt="Splash screen – mobile"></td>
-    <td align="center"><img src="assets/mockups/02-artist-selection/mobile-selected/screen.png" width="220" alt="Artist selection – 3 selected"></td>
-    <td align="center"><img src="assets/mockups/03-playlist-results/mobile-info-selected/screen.png" width="220" alt="Playlist results with track info expanded"></td>
+    <td align="center"><img src="assets/mockups/splash-mobile.png" width="220" alt="Splash screen – mobile"></td>
+    <td align="center"><img src="assets/mockups/onboarding-mobile-selected.png" width="220" alt="Artist selection – 3 selected"></td>
+    <td align="center"><img src="assets/mockups/results-mobile-modal.png" width="220" alt="Playlist results with track info expanded"></td>
   </tr>
 </table>
 
-> See [`assets/mockups/`](assets/mockups/) for all viewport variants and HTML source files.
+> See [`assets/mockups/`](assets/mockups/) for all viewport variants and screen renders.
 
 ## Setup Instructions
 
@@ -81,7 +85,9 @@ Captured from `POST /api/recommend`.
 
 ### Example 1: High Energy EDM
 
-**Request:**
+<details>
+<summary><code>View API Request</code></summary>
+
 ```json
 {
   "user_name": "Alex",
@@ -89,7 +95,11 @@ Captured from `POST /api/recommend`.
 }
 ```
 
-**Response `200 OK`:**
+</details>
+
+<details>
+<summary><code>View API Response (200 OK)</code></summary>
+
 ```json
 {
   "user_name": "Alex",
@@ -127,9 +137,13 @@ Captured from `POST /api/recommend`.
 }
 ```
 
+</details>
+
 ### Example 2: Chill Acoustic
 
-**Request:**
+<details>
+<summary><code>View API Request</code></summary>
+
 ```json
 {
   "user_name": "Sarah",
@@ -137,7 +151,11 @@ Captured from `POST /api/recommend`.
 }
 ```
 
-**Response `200 OK`:**
+</details>
+
+<details>
+<summary><code>View API Response (200 OK)</code></summary>
+
 ```json
 {
   "user_name": "Sarah",
@@ -174,6 +192,8 @@ Captured from `POST /api/recommend`.
 }
 ```
 
+</details>
+
 ## Reliability & Guardrails
 
 We implement three concrete engineering decisions to keep the system safe, predictable, and trustworthy:
@@ -183,7 +203,9 @@ We implement three concrete engineering decisions to keep the system safe, predi
 1. **Graceful Degradation**: Every Gemini call has a deterministic fallback. A missing key or malformed JSON drops to a hash-based heuristic features and sets a degraded flag so the UI can warn the user.
 2. **Prompt-Injection Safety**: The name field is the only untrusted free text. LLMs only see the controlled vocabulary artist list.
 3. **Automated Testing**: Unit tests cover the core scoring logic and dedicated tests for the degraded-fallback path.
-*Additionally, we enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse.*
+
+> [!NOTE]
+> We enforce a rate limit of 3 playlists per IP per hour to prevent Gemini API quota abuse.
 
 ## Design & API Decisions
 - **Batched Classification**: To avoid hitting rate limits while using Gemini API for the classification task, we bundle the tracks into a single JSON array payload.
