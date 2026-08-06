@@ -22,17 +22,13 @@ This document records the reasoning traces, outputs, and execution flow for Vibe
      ```
 
 2. **Agent 2 (Batched Classifier Output)**:
-   - Output: `{"genre": "folk", "mood": "chill", "energy": 0.48, "acousticness": 0.85, "valence": 0.52, "tempo_bpm": 118, "danceability": 0.58}`
+   - Output: {"genre": "folk", "mood": "chill", "energy": 0.48, "acousticness": 0.85, "valence": 0.52, "tempo_bpm": 118, "danceability": 0.58}
 
 3. **Deterministic Recommender Output**:
-   - Mathematical Calculation:
-     For each track, proximity to Target Vibe Profile is evaluated:
-     $$\text{Score} = w_{\text{genre}} \cdot I_{\text{genre}} + w_{\text{mood}} \cdot I_{\text{mood}} + \sum_{f} w_f \cdot \left(1 - \frac{|f_{\text{actual}} - f_{\text{target}}|}{\text{scale}_f}\right)$$
-     
-     Track "Stay Alive": (Score = 8.23, reasons: Exact genre match +3.0, Mood match +2.0, Energy proximity +1.96, Acoustic match +1.27)
+   - Output: "Stay Alive (Score = 8.23, reasons: Exact genre match +3.0, Mood match +2.0, Energy proximity +1.96, Acoustic match +1.27)"
 
 4. **Agent 3 (DJ Intro Generator Output)**:
-   - Output: `"From the soaring harmonies of Fleet Foxes and the timeless grooves of Bob Marley to the storytelling of Taylor Swift, your taste spans generations. Get ready to unwind as we start off with José González and 'Stay Alive'."`
+   - Output: "From the soaring harmonies of Fleet Foxes and the timeless grooves of Bob Marley to the storytelling of Taylor Swift, your taste spans generations. Get ready to unwind as we start off with José González and 'Stay Alive'."
 
 ---
 

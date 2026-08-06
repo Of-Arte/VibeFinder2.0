@@ -80,6 +80,33 @@
 
 ---
 
+## Recommendation Algorithm & Proximity Logic
+
+The system utilizes a hybrid approach: specialized LLM agents extract music preference targets and song attributes, which are then fed into a deterministic mathematical scoring engine to rank recommendations.
+
+### Proximity Scoring Formula
+For continuous features, the proximity score is computed by normalizing the absolute difference between the target preference and the song's actual value. The unit_scale is set to 60.0 BPM to normalize the difference over a reasonable BPM window.
+
+### Scoring Weights
+The final score of a track is the sum of all weighted matching components:
+
+| Feature / Match Type | Weight | Description |
+| :--- | :--- | :--- |
+| **Exact Genre** | 2.0 | Awarded if target genre matches song genre exactly |
+| **Partial Genre** | 1.0 | Awarded if target genre is a substring of song genre (or vice-versa) |
+| **Exact Mood** | 1.5 | Awarded if target mood matches song mood exactly |
+| **Energy Proximity** | 2.0 | Proximity score based on target energy |
+| **Valence Proximity** | 1.5 | Proximity score based on target valence |
+| **Danceability Proximity** | 1.5 | Proximity score based on target danceability |
+| **Acousticness Proximity** | 1.5 | Proximity score based on target acousticness |
+| **Tempo Proximity** | 1.0 | Proximity score based on target tempo (normalized over 60.0 BPM) |
+| **Valence Bonus** | 0.5 | Upbeat valence bonus if target mood is "happy" and song valence $\ge 0.7$ |
+
+### Categorical vs. Continuous Features
+Continuous features do the primary ranking, while matches on categorical features (genre, mood) are designed to guide the broader direction and break ranking ties.
+
+---
+
 ## Model Evaluation & Performance
 
 To ensure the recommendation system is accurate and fast, we run an evaluation script (evaluate.py) across **7 test profiles**  against a controlled pool of songs.
@@ -88,21 +115,21 @@ Here is a summary of the model's performance:
 
 | Metric | Target | Backup Mode (No API Keys) | Live Gemini API Mode |
 | :--- | :--- | :--- | :--- |
-| **Alignment** | `> 0.80` | **`0.86`**  | **`0.82`**  |
-| **Latency** | `< 2.0s` | **`1.1 ms`** | **`4.3s`**  |
-| **Fallback Rate** | `0%` | **`100%`**  | **`0.0%`**  |
+| **Alignment** | > 0.80 | 0.86  | 0.82  |
+| **Latency** | < 2.0s | 1.1 ms | 4.3s  |
+| **Fallback Rate** | 0% | 100%  | 0.0%  |
 
 * **Raw Output**: Without structural JSON output constraints, raw model outputs failed to parse $100\%$ of the time, resulting in total degradation.
 * **Backup Mode**: When offline or without API keys, the system relies on deterministic math/hashing backups to keep running instantly, but it will not benefit from Gemini's dynamic analysis.
 
 ### Known Limitations & Biases
 * **Wrong Recommendation Example (Genre Dominance)**:
-  * **The Scenario**: A user selects `Taylor Swift`, `Dua Lipa`, and `Billie Eilish`, leading to an inferred target of `"happy pop"` with an energy target of `0.728`.
-  * **The Issue**: Billie Eilish's song *Bad Guy* is recommended. In reality, Bad Guy is a dark, low-energy, and moody song.
+  * **The Scenario**: A user selects Taylor Swift, Dua Lipa, and Billie Eilish, leading to an inferred target of "happy pop" with an energy target of 0.728.
+  * **The Issue**: Billie Eilish's song Bad Guy is recommended. In reality, Bad Guy is a dark, low-energy, and moody song.
   * **Why it gets it wrong**: Because the system awards large point bonuses for exact genre matches, Bad Guy outscores actual happy, upbeat songs of other genres. The point boost overshadows the actual mood and energy mismatch.
 
 ### What Changed Because of the Results
-* **From loops to batches**: Initially, we classified songs one-by-one (taking $> 8$ seconds and hitting rate limits instantly). We changed this to batch-classify songs in one single request, dropping latency to under $1.5$ seconds.
+* **From loops to batches**: Initially, we classified songs one-by-one (taking > 8 seconds and hitting rate limits instantly). We changed this to batch-classify songs in one single request, dropping latency to under 1.5 seconds.
 * **Continuous scoring**: VibeFinder 1.0 only filtered by broad genre, causing tie-scores. We upgraded the system to score the exact distance of musical attributes, providing unique and accurate rankings.
 
 ### Misuse and Prevention

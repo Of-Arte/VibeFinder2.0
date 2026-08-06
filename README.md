@@ -25,6 +25,8 @@ To rank tracks from the fetched artist catalog, the recommender calculates proxi
 
 ![From an Undifferentiated Pool to a Ranked Path](assets/slides/recommender_logic.png)
 
+*(For details on the exact scoring weights, proximity equations, and features, see the [Model Card](model_card.md).)*
+
 ## UI / UX — The User Flow
 
 <table>
@@ -203,9 +205,6 @@ We implement three concrete engineering decisions to keep the system safe, predi
 1. **Graceful Degradation**: Every Gemini call has a deterministic fallback. A missing key or malformed JSON sets a degraded flag so the UI can warn the user.
 2. **Prompt-Injection Safety**: The name field is the only untrusted free text. LLMs only see the artist list.
 3. **Automated Testing**: Unit tests cover the scoring logic and dedicated tests for the degraded-fallback path.
-
-> [!NOTE]
-> We enforce a rate limit of 10 requests per minute per IP to prevent overloading the backend with too many requests. (See **`backend/config.py`**)
 
 ## Design & API Decisions
 - **Batched Classification**: To avoid hitting rate limits while using Gemini API, we bundle the tracks into a single JSON array payload.
