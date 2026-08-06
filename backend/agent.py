@@ -153,7 +153,7 @@ def _generate_json(prompt: str, max_output_tokens: int = None):
 
 
 def _safe_json_loads(text: str):
-    """Parse JSON, tolerating markdown code fences or stray prose."""
+    """Parse JSON, tolerating markdown code fences, stray prose, or trailing commas."""
     if not text:
         return None
     try:
@@ -166,13 +166,22 @@ def _safe_json_loads(text: str):
         return json.loads(cleaned)
     except json.JSONDecodeError:
         pass
+    # Try stripping trailing commas from the cleaned JSON
+    try:
+        return json.loads(re.sub(r',\s*([\]}])', r'\1', cleaned))
+    except json.JSONDecodeError:
+        pass
     # Last resort: extract the first {...} or [...] block.
     match = re.search(r"(\[.*\]|\{.*\})", cleaned, flags=re.DOTALL)
     if match:
+        extracted = match.group(1)
         try:
-            return json.loads(match.group(1))
+            return json.loads(extracted)
         except json.JSONDecodeError:
-            return None
+            try:
+                return json.loads(re.sub(r',\s*([\]}])', r'\1', extracted))
+            except json.JSONDecodeError:
+                return None
     return None
 
 

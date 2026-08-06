@@ -1,9 +1,6 @@
 # AI Interactions & Agent Reasoning 
 
 This document records the reasoning traces, outputs, and execution flow for VibeFinder 2.0.
-
-The system uses a multi-agent architecture where three LLM agent calls interact with an external API and a deterministic proximity scoring engine.
-
 ---
 
 ## Scenario 1: Acoustic / Chill Folk Profile
@@ -24,11 +21,10 @@ The system uses a multi-agent architecture where three LLM agent calls interact 
      }
      ```
 
-2. **Agent 2 (Batched Classifier Output for "Stay Alive" by José González)**:
+2. **Agent 2 (Batched Classifier Output)**:
    - Output: `{"genre": "folk", "mood": "chill", "energy": 0.48, "acousticness": 0.85, "valence": 0.52, "tempo_bpm": 118, "danceability": 0.58}`
 
 3. **Deterministic Recommender Output**:
-
    - Mathematical Calculation:
      For each track, proximity to Target Vibe Profile is evaluated:
      $$\text{Score} = w_{\text{genre}} \cdot I_{\text{genre}} + w_{\text{mood}} \cdot I_{\text{mood}} + \sum_{f} w_f \cdot \left(1 - \frac{|f_{\text{actual}} - f_{\text{target}}|}{\text{scale}_f}\right)$$
@@ -60,7 +56,7 @@ graph TD
     H --> J
 ```
 
-### Trace Details:
+## Fallback Path Trace
 
 1. **Degraded Vibe Translation**:
    `_calculate_fallback_target_vibe` computes exact averages across Deezer candidate track features matching selected artist names.

@@ -240,6 +240,11 @@ def main():
                 f"Diversity: {res['diversity']:>5.3f} | "
                 f"Status: {status_str}"
             )
+
+            from backend import config
+            if config.has_gemini() and sc != BENCHMARK_SCENARIOS[-1]:
+                print("  Sleeping 10s to respect Gemini rate limits...")
+                time.sleep(10.0)
         except Exception as e:
             print(f"  [{sc['name']:<22}] FAILED with error: {str(e)}")
 
