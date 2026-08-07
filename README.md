@@ -9,11 +9,11 @@
 
 > VibeFinder 1.0 was a static CLI music recommendation engine that connected a user's personal taste profile with matching songs from a hardcoded CSV catalog. It calculated numeric scores based on genre, mood, energy level, acoustic attributes, and valence to return a ranked list of suggestions.
 
-**VibeFinder 2.0** evolves the CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the **Deezer API** to fetch similar tracks, uses **Gemini** to classify those and generate a personalized intro and the ranked playlist.
+**VibeFinder 2.0** evolves the CLI tool into a React frontend where users pick their favorite artists in a curated onboarding flow. The FastAPI backend leverages the Deezer API to fetch similar tracks, uses Gemini to classify those and generate a personalized intro and the ranked playlist.
 
 ## Architecture Overview
 
-The system relies on an agentic workflow composed of three distinct LLM agents wrapped around a deterministic mathematical scoring engine.
+The system runs 3 distinct LLM agents wrapped around a deterministic mathematical scoring engine.
 
 ![Architecture: The Agentic Workflow](assets/slides/architecture_workflow.png)
 
@@ -21,11 +21,11 @@ The system relies on an agentic workflow composed of three distinct LLM agents w
 
 ### Recommendation Algorithm
 
-To rank tracks from the fetched artist catalog, the recommender calculates proximity scores in a proximity-based feature space, using genre, mood, energy, tempo, valence, danceability, and acousticness to determine the best matches.
+To rank tracks from the fetched artist catalog, the recommender calculates proximity scores for genre, mood, energy, tempo, valence, danceability, and acousticness to determine the best matches.
 
 ![From an Undifferentiated Pool to a Ranked Path](assets/slides/recommender_logic.png)
 
-*(For details on the exact scoring weights, proximity equations, and features, see the [Model Card](model_card.md).)*
+*(For details on the exact scoring weights, see the [Model Card](model_card.md).)*
 
 ## UI / UX — The User Flow
 
@@ -220,9 +220,10 @@ This project helped me gain a deeper unstanding of the complexity in combining d
 This project utilizes the following third-party libraries, tools, and APIs.
 
 ### Project Documentation
+* **[Changelog (Iteration History)](CHANGELOG.md)** - Summary of changes by counted iteration release.
+* **[Product Roadmap to 3.0](ROADMAP.md)** - Milestone targets leading to VibeFinder 3.0.
 * **[AI Interactions Log](ai_interactions.md)** - Reasoning traces and sample LLM conversations.
 * **[Model Card & Ethical Reflection](model_card.md)** - Model details, evaluation metrics, and reflection on AI ethics.
-
 
 ### APIs
 * **[Deezer API Documentation](https://developers.deezer.com/api)** - Music metadata retrieval and 30-second audio previews.
@@ -230,10 +231,11 @@ This project utilizes the following third-party libraries, tools, and APIs.
 
 ### Backend
 * **[FastAPI](https://fastapi.tiangolo.com/)** - Python web framework for building APIs.
-* **[Uvicorn](https://www.uvicorn.org/)** - Server implementation for running FastAPI.
+* **[Uvicorn](https://www.uvicorn.dev/)** - Server implementation for running FastAPI.
 * **[Pytest](https://docs.pytest.org/)** - Python testing framework.
 
 ### Frontend
 * **[React](https://react.dev/)** - JS library for building user interfaces.
 * **[Vite](https://vite.dev/)** - Build tool and dev server for frontend.
 * **[Oxlint](https://github.com/oxc-project/oxc)** - JS/TS linter.
+

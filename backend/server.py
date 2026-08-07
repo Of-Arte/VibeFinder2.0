@@ -13,10 +13,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from backend import agent, config, deezer_client, ratelimit
+from backend import agent, config, deezer_client, ratelimit, __version__
 from src.recommender import score_song
 
-app = FastAPI(title="VibeFinder 2.0 API", version="2.0.0")
+app = FastAPI(title="VibeFinder API", version=__version__)
 
 app.add_middleware(
     CORSMiddleware,
@@ -122,9 +122,10 @@ def _score_pool(pool: List[Dict], target_vibe: Dict, k: int = 5) -> List[Dict]:
 # --- Routes ----------------------------------------------------------------
 @app.get("/api/health")
 def health() -> Dict:
-    """Lightweight readiness probe reporting which integrations are configured."""
+    """Lightweight readiness probe reporting version and configured integrations."""
     return {
         "status": "ok",
+        "version": __version__,
         "gemini": config.has_gemini(),
         "source": "deezer",
     }

@@ -22,15 +22,15 @@
 
   [Example 1]
   Input: ["Daft Punk", "Justice"]
-  Output: {"favorite_genre": "edm", "favorite_mood": "intense", "target_energy": 0.85, "likes_acoustic": false, "target_valence": 0.55, "target_danceability": 0.80, "target_acousticness": 0.05, "target_tempo_bpm": 124}
+  Output: {"favorite_genre": "edm", "favorite_genres": {"edm": 0.8, "pop": 0.2}, "favorite_mood": "intense", "favorite_moods": {"intense": 0.7, "happy": 0.3}, "target_energy": 0.85, "likes_acoustic": false, "target_valence": 0.55, "target_danceability": 0.80, "target_acousticness": 0.05, "target_tempo_bpm": 124}
 
   [Example 2]
   Input: ["Fleet Foxes", "Bob Marley"]
-  Output: {"favorite_genre": "folk", "favorite_mood": "chill", "target_energy": 0.45, "likes_acoustic": true, "target_valence": 0.65, "target_danceability": 0.55, "target_acousticness": 0.75, "target_tempo_bpm": 105}
+  Output: {"favorite_genre": "folk", "favorite_genres": {"folk": 0.6, "reggae": 0.4}, "favorite_mood": "chill", "favorite_moods": {"chill": 0.8, "happy": 0.2}, "target_energy": 0.45, "likes_acoustic": true, "target_valence": 0.65, "target_danceability": 0.55, "target_acousticness": 0.75, "target_tempo_bpm": 105}
 
   [Target Execution]
   Input: ["Kendrick Lamar", "The Weeknd"]
-  Output: {"favorite_genre": "hip hop", "favorite_mood": "intense", "target_energy": 0.75, "likes_acoustic": false, "target_valence": 0.55, "target_danceability": 0.65, "target_acousticness": 0.15, "target_tempo_bpm": 120}
+  Output: {"favorite_genre": "hip hop", "favorite_genres": {"hip hop": 0.7, "pop": 0.3}, "favorite_mood": "intense", "favorite_moods": {"intense": 0.8, "chill": 0.2}, "target_energy": 0.75, "likes_acoustic": false, "target_valence": 0.55, "target_danceability": 0.65, "target_acousticness": 0.15, "target_tempo_bpm": 120}
   ```
   </details>
 
