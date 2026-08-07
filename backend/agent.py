@@ -379,7 +379,9 @@ def _calculate_fallback_target_vibe(artists: List[str], pool: List[Dict]) -> Dic
         fallback_genre = _get_fallback_artist_genre(artists[0] if artists else "")
         return {
             "favorite_genre": fallback_genre,
+            "favorite_genres": {fallback_genre: 1.0},
             "favorite_mood": "happy",
+            "favorite_moods": {"happy": 1.0},
             "target_energy": 0.6,
             "likes_acoustic": False,
             "target_valence": 0.6,
@@ -392,15 +394,33 @@ def _calculate_fallback_target_vibe(artists: List[str], pool: List[Dict]) -> Dic
     genres = [t.get("genre") for t in matching_tracks if t.get("genre")]
     moods = [t.get("mood") for t in matching_tracks if t.get("mood")]
 
+    favorite_genres = {}
     if genres:
-        favorite_genre, _ = Counter(genres).most_common(1)[0]
+        genre_counts = Counter(genres)
+        total_g = len(genres)
+        favorite_genres = {g: round(count / total_g, 3) for g, count in genre_counts.items() if g in _GENRES}
+        if not favorite_genres:
+            favorite_genre = _get_fallback_artist_genre(artists[0] if artists else "")
+            favorite_genres = {favorite_genre: 1.0}
+        else:
+            favorite_genre, _ = genre_counts.most_common(1)[0]
     else:
         favorite_genre = _get_fallback_artist_genre(artists[0] if artists else "")
+        favorite_genres = {favorite_genre: 1.0}
 
+    favorite_moods = {}
     if moods:
-        favorite_mood, _ = Counter(moods).most_common(1)[0]
+        mood_counts = Counter(moods)
+        total_m = len(moods)
+        favorite_moods = {m: round(count / total_m, 3) for m, count in mood_counts.items() if m in _MOODS}
+        if not favorite_moods:
+            favorite_mood = "happy"
+            favorite_moods = {"happy": 1.0}
+        else:
+            favorite_mood, _ = mood_counts.most_common(1)[0]
     else:
         favorite_mood = "happy"
+        favorite_moods = {"happy": 1.0}
 
     energies = [float(t.get("energy", 0.5)) for t in matching_tracks]
     valences = [float(t.get("valence", 0.5)) for t in matching_tracks]
@@ -416,7 +436,9 @@ def _calculate_fallback_target_vibe(artists: List[str], pool: List[Dict]) -> Dic
 
     return {
         "favorite_genre": favorite_genre,
+        "favorite_genres": favorite_genres,
         "favorite_mood": favorite_mood,
+        "favorite_moods": favorite_moods,
         "target_energy": target_energy,
         "likes_acoustic": target_acousticness >= 0.5,
         "target_valence": target_valence,
@@ -431,20 +453,18 @@ def translate_artists_to_prefs(artists: List[str], pool: List[Dict] = None) -> D
     Infer the user's target vibe from their selected artists.
 
     Returns a dict shaped for the recommender's scorer:
-        {favorite_genre, favorite_mood, target_energy, likes_acoustic,
-         target_valence, target_danceability, target_acousticness,
-         target_tempo_bpm}
-
-    The continuous target_* fields let the recommender score valence,
-    danceability, tempo, and acousticness proximity — the features that
-    actually separate tracks within a single-genre pool.
+        {favorite_genre, favorite_genres, favorite_mood, favorite_moods,
+         target_energy, likes_acoustic, target_valence, target_danceability,
+         target_acousticness, target_tempo_bpm}
     """
     prompt = (
         "Given these favorite artists, infer the listener's target music profile.\n"
         f"Artists: {json.dumps(artists, ensure_ascii=False)}\n\n"
         "Output ONLY a JSON object with keys: "
-        f"favorite_genre (one of {_GENRES}), "
-        f"favorite_mood (one of {_MOODS}), "
+        f"favorite_genres (a dictionary of genres from {_GENRES} mapping to their weights between 0.0 and 1.0, summing to 1.0), "
+        f"favorite_moods (a dictionary of moods from {_MOODS} mapping to their weights between 0.0 and 1.0, summing to 1.0), "
+        f"favorite_genre (the genre from {_GENRES} with the highest weight), "
+        f"favorite_mood (the mood from {_MOODS} with the highest weight), "
         "target_energy (0.0-1.0), likes_acoustic (true/false), "
         "target_valence (0.0-1.0), target_danceability (0.0-1.0), "
         "target_acousticness (0.0-1.0), target_tempo_bpm (integer 40-240)."
@@ -458,15 +478,57 @@ def translate_artists_to_prefs(artists: List[str], pool: List[Dict] = None) -> D
 
     parsed = _generate_json(prompt)
     if isinstance(parsed, dict):
+        raw_genres = parsed.get("favorite_genres")
+        favorite_genres = {}
+        if isinstance(raw_genres, dict):
+            for k, v in raw_genres.items():
+                k_clean = str(k).strip().lower()
+                if k_clean in _GENRES:
+                    try:
+                        favorite_genres[k_clean] = max(0.0, min(1.0, float(v)))
+                    except (TypeError, ValueError):
+                        pass
+        if favorite_genres:
+            total_w = sum(favorite_genres.values())
+            if total_w > 0:
+                favorite_genres = {k: round(v / total_w, 3) for k, v in favorite_genres.items()}
+        
         genre = str(parsed.get("favorite_genre", "pop")).strip().lower()
+        if genre not in _GENRES:
+            genre = "pop"
+        if not favorite_genres:
+            favorite_genres = {genre: 1.0}
+
+        raw_moods = parsed.get("favorite_moods")
+        favorite_moods = {}
+        if isinstance(raw_moods, dict):
+            for k, v in raw_moods.items():
+                k_clean = str(k).strip().lower()
+                if k_clean in _MOODS:
+                    try:
+                        favorite_moods[k_clean] = max(0.0, min(1.0, float(v)))
+                    except (TypeError, ValueError):
+                        pass
+        if favorite_moods:
+            total_w = sum(favorite_moods.values())
+            if total_w > 0:
+                favorite_moods = {k: round(v / total_w, 3) for k, v in favorite_moods.items()}
+        
         mood = str(parsed.get("favorite_mood", "chill")).strip().lower()
+        if mood not in _MOODS:
+            mood = "chill"
+        if not favorite_moods:
+            favorite_moods = {mood: 1.0}
+
         try:
             tempo = max(40.0, min(240.0, float(parsed.get("target_tempo_bpm", 110))))
         except (TypeError, ValueError):
             tempo = 110.0
         return {
-            "favorite_genre": genre if genre in _GENRES else "pop",
-            "favorite_mood": mood if mood in _MOODS else "chill",
+            "favorite_genre": genre,
+            "favorite_genres": favorite_genres,
+            "favorite_mood": mood,
+            "favorite_moods": favorite_moods,
             "target_energy": _unit(parsed.get("target_energy"), 0.6),
             "likes_acoustic": bool(parsed.get("likes_acoustic", False)),
             "target_valence": _unit(parsed.get("target_valence"), 0.5),
@@ -483,7 +545,9 @@ def translate_artists_to_prefs(artists: List[str], pool: List[Dict] = None) -> D
     fallback_genre = _get_fallback_artist_genre(artists[0] if artists else "")
     return {
         "favorite_genre": fallback_genre,
+        "favorite_genres": {fallback_genre: 1.0},
         "favorite_mood": "happy",
+        "favorite_moods": {"happy": 1.0},
         "target_energy": 0.6,
         "likes_acoustic": False,
         "target_valence": 0.6,
@@ -499,12 +563,9 @@ def translate_artists_to_prefs(artists: List[str], pool: List[Dict] = None) -> D
 def generate_dj_intro(artists: List[str], top_songs: List[Dict]) -> str:
     """Write a 2-3 sentence radio-DJ intro (<60 words) for the playlist.
 
-    SECURITY: the listener's name is intentionally NOT used here. It is
-    untrusted free-text input, and passing it to the LLM would be a
-    prompt-injection vector. Personalization comes entirely from the (curated,
-    safe) selected artists and the top track; the intro never addresses the
-    listener by name. The UI still greets the user by name separately, using
-    the name only as display text.
+    SECURITY: the listener's name is intentionally NOT used here. Personalization
+    comes entirely from the selected artists and the top track. The UI still greets
+    the user by name separately, using the name only as display text.
     """
     top_title = top_songs[0].get("title", "your first track") if top_songs else "your first track"
 

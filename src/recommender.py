@@ -159,9 +159,28 @@ def _proximity(target: float, actual: float, weight: float,
 
 
 def _score_genre(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
-    target = (prefs.get("favorite_genre") or prefs.get("genre") or "").strip().lower()
     genre = str(song.get("genre", "")).strip().lower()
-    if not (target and genre):
+    if not genre:
+        return []
+
+    # If new weighted genres are present
+    weighted_genres = prefs.get("favorite_genres")
+    if isinstance(weighted_genres, dict):
+        components = []
+        for target, weight in weighted_genres.items():
+            target_clean = str(target).strip().lower()
+            if target_clean == genre:
+                pts = w.genre_exact * weight
+                components.append((pts, f"Exact genre match ({target_clean}, weight {weight:.2f}, +{pts:.2f})"))
+            elif target_clean in genre or genre in target_clean:
+                pts = w.genre_partial * weight
+                components.append((pts, f"Partial genre match ({target_clean}, weight {weight:.2f}, +{pts:.2f})"))
+        if components:
+            return [max(components, key=lambda x: x[0])]
+
+    # Fallback to legacy behavior
+    target = (prefs.get("favorite_genre") or prefs.get("genre") or "").strip().lower()
+    if not target:
         return []
     if target == genre:
         return [(w.genre_exact, f"Exact genre match (+{w.genre_exact:.1f})")]
@@ -171,9 +190,25 @@ def _score_genre(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Compone
 
 
 def _score_mood(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
-    target = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
     mood = str(song.get("mood", "")).strip().lower()
-    if target and mood and target == mood:
+    if not mood:
+        return []
+
+    # If new weighted moods are present
+    weighted_moods = prefs.get("favorite_moods")
+    if isinstance(weighted_moods, dict):
+        components = []
+        for target, weight in weighted_moods.items():
+            target_clean = str(target).strip().lower()
+            if target_clean == mood:
+                pts = w.mood_exact * weight
+                components.append((pts, f"Mood match ({target_clean}, weight {weight:.2f}, +{pts:.2f})"))
+        if components:
+            return [max(components, key=lambda x: x[0])]
+
+    # Fallback to legacy behavior
+    target = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
+    if target and target == mood:
         return [(w.mood_exact, f"Mood match (+{w.mood_exact:.1f})")]
     return []
 
@@ -232,9 +267,19 @@ def _score_acoustic(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Comp
 
 
 def _score_valence_bonus(prefs: Dict, song: Dict, w: ScoringWeights) -> Iterable[Component]:
-    target_mood = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
-    if target_mood == "happy" and float(song.get("valence", 0.0)) >= 0.7:
-        return [(w.valence_bonus, f"Upbeat valence bonus (+{w.valence_bonus:.1f})")]
+    # Check weighted moods first
+    weighted_moods = prefs.get("favorite_moods")
+    happy_weight = 0.0
+    if isinstance(weighted_moods, dict):
+        happy_weight = float(weighted_moods.get("happy", 0.0))
+    else:
+        target_mood = (prefs.get("favorite_mood") or prefs.get("mood") or "").strip().lower()
+        if target_mood == "happy":
+            happy_weight = 1.0
+
+    if happy_weight > 0.0 and float(song.get("valence", 0.0)) >= 0.7:
+        pts = w.valence_bonus * happy_weight
+        return [(pts, f"Upbeat valence bonus (+{pts:.1f})")]
     return []
 
 

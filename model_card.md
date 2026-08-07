@@ -123,14 +123,15 @@ Here is a summary of the model's performance:
 * **Backup Mode**: When offline or without API keys, the system relies on deterministic math/hashing backups to keep running instantly, but it will not benefit from Gemini's dynamic analysis.
 
 ### Known Limitations & Biases
-* **Wrong Recommendation Example (Genre Dominance)**:
-  * **The Scenario**: A user selects Taylor Swift, Dua Lipa, and Billie Eilish, leading to an inferred target of "happy pop" with an energy target of 0.728.
-  * **The Issue**: Billie Eilish's song Bad Guy is recommended. In reality, Bad Guy is a dark, low-energy, and moody song.
-  * **Why it gets it wrong**: Because the system awards large point bonuses for exact genre matches, Bad Guy outscores actual happy, upbeat songs of other genres. The point boost overshadows the actual mood and energy mismatch.
+* **Restricted Curated Artist Onboarding**:
+  * **The Scenario**: A user onboarded is restricted to choosing from a hardcoded list of 16 popular artists.
+  * **The Issue**: Users who listen to niche genres outside the curated list cannot express their true preferences, forcing the translator to map their tastes to the most similar sounding artist in the list.
+  * **Why it is a limitation**: The accuracy of the inferred profile is directly bounded by the curated artist catalog size and diversity.
 
 ### What Changed Because of the Results
-* **From loops to batches**: Initially, we classified songs one-by-one (taking > 8 seconds and hitting rate limits instantly). We changed this to batch-classify songs in one single request, dropping latency to under 1.5 seconds.
+* **From loops to batches**: In the planning stage, we classified songs one-by-one. We changed this to batch-classify songs in one request, dropping latency to under 1.5 seconds.
 * **Continuous scoring**: VibeFinder 1.0 only filtered by broad genre, causing tie-scores. We upgraded the system to score the exact distance of musical attributes, providing unique and accurate rankings.
+* **Weighted Genre & Mood Scoring (Genre Dominance Fix)**: We replaced simple genre/mood preferences with weighted values (e.g., {"pop": 0.9, "jazz": 0.1}). Points are now scaled so that matching features in a secondary genre can successfully outrank poorly matching songs in a primary genre.
 
 ### Misuse and Prevention
 - **Misuse Case**: An AI that dynamically generates recommendations based on user inputs could be tricked into generating inappropriate, hateful, or off-brand content if untrusted free-text were fed into the prompt.

@@ -225,3 +225,51 @@ def test_oop_recommender_separates_same_artist_tracks():
                        target_energy=0.85, likes_acoustic=False)
     results = Recommender(songs).recommend(user, k=2)
     assert [s.title for s in results] == ["High Vibe", "Low Vibe"]
+
+
+# --- Weighted preference path tests ----------------------------------------
+def test_weighted_genre_and_mood_scoring():
+    # Test that weighted genres and moods yield scaled points
+    prefs = {
+        "favorite_genres": {"pop": 0.6, "jazz": 0.4},
+        "favorite_moods": {"happy": 0.8, "chill": 0.2},
+    }
+    pop_happy_song = make_song(genre="pop", mood="happy", valence=0.5)
+    score, reasons = score_song(prefs, pop_happy_song)
+    expected_genre_pts = DEFAULT_WEIGHTS.genre_exact * 0.6
+    expected_mood_pts = DEFAULT_WEIGHTS.mood_exact * 0.8
+    assert score == pytest.approx(expected_genre_pts + expected_mood_pts)
+    
+    text = " | ".join(reasons)
+    assert "Exact genre match (pop, weight 0.60" in text
+    assert "Mood match (happy, weight 0.80" in text
+
+
+def test_other_features_outrank_low_weighted_genre():
+    # Song 1: Low-weighted genre ("jazz" at 0.1 weight), but perfect match on energy/valence/tempo
+    # Song 2: High-weighted genre ("pop" at 0.9 weight), but very poor features (0 match)
+    prefs = {
+        "favorite_genres": {"pop": 0.9, "jazz": 0.1},
+        "target_energy": 0.8,
+        "target_valence": 0.8,
+        "target_tempo_bpm": 120.0,
+    }
+    jazz_perfect_song = make_song(
+        genre="jazz",
+        energy=0.8,
+        valence=0.8,
+        tempo_bpm=120.0,
+    )
+    pop_poor_song = make_song(
+        genre="pop",
+        energy=0.0, # distance 0.8 -> match 0.2 -> 0.2 * energy weight (0.4 pts)
+        valence=0.0, # distance 0.8 -> match 0.2 -> 0.2 * valence weight (0.3 pts)
+        tempo_bpm=60.0, # distance 60 -> match 0.0 -> 0 pts
+    )
+    
+    score_jazz, _ = score_song(prefs, jazz_perfect_song)
+    score_pop, _ = score_song(prefs, pop_poor_song)
+    
+    # Jazz should outrank pop because the feature proximity scores dominate over the low-weighted genre
+    assert score_jazz > score_pop
+
