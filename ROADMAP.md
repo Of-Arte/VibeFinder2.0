@@ -9,7 +9,7 @@ This roadmap outlines the counted iterations and release plan leading from **Vib
 | Iteration | Version | Status | Milestone Focus |
 | :--- | :--- | :--- | :--- |
 | **Iteration 1** | `v2.0.0` | **Completed** | Full-Stack Web Init (FastAPI + React UI + Agentic DJ Scaffold) |
-| **Iteration 2** | `v2.1.0` | **Completed (Current)** | Deezer API pool, Weighted Scoring, Gemini Resilience & System Evaluation |
+| **Iteration 2** | `v2.1.0` | **Completed** | Deezer API pool, Weighted Scoring, Gemini Resilience & System Evaluation |
 | **Iteration 3** | `v2.2.0` | **Next Up** | Session Persistence, History Logging & Spotify/Apple Music Sync |
 | **Iteration 4** | `v2.3.0` | Planned | Real-Time Audio Visualizer & Customizable DJ Personas |
 | **Major 3.0** | `v3.0.0` | **Target Vision** | Real-Time Neural Voice Audio DJ, Voice Commands & Autonomous Radio Agent |

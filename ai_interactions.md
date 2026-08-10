@@ -59,6 +59,6 @@ graph TD
    - Resulting Target Vibe: `{"favorite_genre": "pop", "favorite_mood": "happy", "target_energy": 0.60, "likes_acoustic": false, ...}`
 
 2. **Degraded Track Classification (`_fallback_classification`)**:
-   Uses hashing of `artist|title` to map continuous attributes uniformly between $[0.0, 1.0]$, preventing feature collapse:
+   Uses hashing of `artist|title` to map continuous attributes uniformly between $[0.0, 1.0]$.
 3. **Degraded Flag Header**:
    The response payload includes `"degraded": true`, triggering a notification banner in the frontend UI informing the user that fallback heuristic scoring was used.

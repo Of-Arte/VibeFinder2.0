@@ -212,7 +212,7 @@ We implement three concrete engineering decisions to keep the system safe, predi
 - **API Reliability**: The Deezer API requires no authentication keys, making the system easily accessible to anyone connecting to the application.
 
 ## Reflection
-This project helped me gain a deeper unstanding of the complexity in combining deterministic algorithms with non-deterministic LLMs. Balancing functionality and scalability is a challenge that forces constant tradeoffs. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
+This project helped me gain a deeper understanding of the complexity in combining deterministic algorithms with non-deterministic LLMs. Balancing functionality and scalability is a challenge that forces constant tradeoffs. I saw how LLM's can be used to create a more personalized user experience, but can also introduce new challenges like hallucination and bias. Using deterministic techniques and guardrails can help mitigate these risks. 
 
 *(See [model_card.md](model_card.md) for a deeper reflection on AI, ethics, and model biases).*
 
