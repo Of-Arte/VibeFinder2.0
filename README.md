@@ -83,7 +83,7 @@ Ensure Docker is installed and running, then:
 
 ## Sample Interactions (Execution Evidence)
 
-Captured from `POST /api/recommend`.
+Captured from `POST /api/recommendations`.
 
 ### Example 1: High Energy EDM
 
@@ -100,7 +100,7 @@ Captured from `POST /api/recommend`.
 </details>
 
 <details>
-<summary><code>View API Response (200 OK)</code></summary>
+<summary><code>View API Response (201 Created)</code></summary>
 
 ```json
 {
@@ -156,7 +156,7 @@ Captured from `POST /api/recommend`.
 </details>
 
 <details>
-<summary><code>View API Response (200 OK)</code></summary>
+<summary><code>View API Response (201 Created)</code></summary>
 
 ```json
 {

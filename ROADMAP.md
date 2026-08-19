@@ -20,7 +20,7 @@ This roadmap outlines the counted iterations and release plan leading from **Vib
 
 ### Iteration 1 — `v2.0.0`: Full-Stack Web Initialization (Completed)
 - [x] **React + Vite Frontend**: Initial artist selection onboarding grid, responsive dark UI, preview player scaffold.
-- [x] **FastAPI Backend Server**: Initial API structure (`POST /api/recommend`, `GET /api/health`).
+- [x] **FastAPI Backend Server**: Initial API structure (`POST /api/recommendations` returning `201 Created`, `GET /api/health`).
 - [x] **Agentic Pipeline Scaffold**: Basic multi-agent orchestration for vibe translation and DJ intros.
 
 ---

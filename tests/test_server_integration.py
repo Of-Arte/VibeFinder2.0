@@ -83,7 +83,7 @@ def test_health_endpoint():
 
 
 def test_recommend_successful_flow(monkeypatch):
-    """Verify POST /api/recommend returns complete schema and top-5 ranked playlist."""
+    """Verify POST /api/recommendations returns complete schema and top-5 ranked playlist."""
     # Reset rate limiting state before test
     ratelimit._HITS.clear()
 
@@ -125,8 +125,8 @@ def test_recommend_successful_flow(monkeypatch):
         "user_name": "Alex",
         "selected_artists": ["Daft Punk", "Justice"],
     }
-    response = client.post("/api/recommend", json=payload)
-    assert response.status_code == 200
+    response = client.post("/api/recommendations", json=payload)
+    assert response.status_code == 201
 
     data = response.json()
     assert data["user_name"] == "Alex"
@@ -153,7 +153,7 @@ def test_recommend_successful_flow(monkeypatch):
 
 
 def test_recommend_degraded_flow(monkeypatch):
-    """Verify POST /api/recommend gracefully falls back and sets degraded=True when Gemini fails."""
+    """Verify POST /api/recommendations gracefully falls back and sets degraded=True when Gemini fails."""
     ratelimit._HITS.clear()
     monkeypatch.setattr(deezer_client, "fetch_tracks", lambda artists, target_pool=40: list(MOCK_DEEZER_POOL))
 
@@ -164,8 +164,8 @@ def test_recommend_degraded_flow(monkeypatch):
         "user_name": "Sam",
         "selected_artists": ["Daft Punk"],
     }
-    response = client.post("/api/recommend", json=payload)
-    assert response.status_code == 200
+    response = client.post("/api/recommendations", json=payload)
+    assert response.status_code == 201
 
     data = response.json()
     assert data["user_name"] == "Sam"
@@ -175,7 +175,7 @@ def test_recommend_degraded_flow(monkeypatch):
 
 
 def test_recommend_empty_artist_list(monkeypatch):
-    """Verify POST /api/recommend handles empty/blank artist list without crashing."""
+    """Verify POST /api/recommendations handles empty/blank artist list without crashing."""
     ratelimit._HITS.clear()
     monkeypatch.setattr(deezer_client, "fetch_tracks", lambda artists, target_pool=40: list(MOCK_DEEZER_POOL))
 
@@ -183,15 +183,15 @@ def test_recommend_empty_artist_list(monkeypatch):
         "user_name": "Guest",
         "selected_artists": ["  ", ""],
     }
-    response = client.post("/api/recommend", json=payload)
-    assert response.status_code == 200
+    response = client.post("/api/recommendations", json=payload)
+    assert response.status_code == 201
     data = response.json()
     assert data["user_name"] == "Guest"
     assert len(data["playlist"]) == 5
 
 
 def test_recommend_deezer_outage_503(monkeypatch):
-    """Verify POST /api/recommend returns HTTP 503 Service Unavailable on Deezer API failure."""
+    """Verify POST /api/recommendations returns HTTP 503 Service Unavailable on Deezer API failure."""
     ratelimit._HITS.clear()
 
     def mock_fetch_error(artists, target_pool=40):
@@ -203,7 +203,7 @@ def test_recommend_deezer_outage_503(monkeypatch):
         "user_name": "Test",
         "selected_artists": ["Daft Punk"],
     }
-    response = client.post("/api/recommend", json=payload)
+    response = client.post("/api/recommendations", json=payload)
     assert response.status_code == 503
     data = response.json()
     assert "The music metadata provider is currently unreachable" in data["detail"]
@@ -218,14 +218,14 @@ def test_recommend_rate_limiting(monkeypatch):
     payload = {"user_name": "Spammer", "selected_artists": ["Daft Punk"]}
 
     # Request 1: OK
-    r1 = client.post("/api/recommend", json=payload)
-    assert r1.status_code == 200
+    r1 = client.post("/api/recommendations", json=payload)
+    assert r1.status_code == 201
 
     # Request 2: OK
-    r2 = client.post("/api/recommend", json=payload)
-    assert r2.status_code == 200
+    r2 = client.post("/api/recommendations", json=payload)
+    assert r2.status_code == 201
 
     # Request 3: Exceeds limit -> 429
-    r3 = client.post("/api/recommend", json=payload)
+    r3 = client.post("/api/recommendations", json=payload)
     assert r3.status_code == 429
     assert "Rate limit reached" in r3.json()["detail"]

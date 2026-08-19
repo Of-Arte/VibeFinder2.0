@@ -1,7 +1,7 @@
 """
 VibeFinder 2.0 FastAPI server.
 
-Exposes POST /api/recommend, which orchestrates the full pipeline:
+Exposes POST /api/recommendations, which orchestrates the full pipeline:
     Input -> Fetch (Deezer) -> Classifier -> Scorer -> DJ -> UI
 
 Run with:  uvicorn backend.server:app --port 8000
@@ -131,7 +131,7 @@ def health() -> Dict:
     }
 
 
-@app.post("/api/recommend", response_model=RecommendResponse)
+@app.post("/api/recommendations", status_code=201, response_model=RecommendResponse)
 def recommend(req: RecommendRequest, request: Request):
     """Full recommendation pipeline for a set of selected artists."""
     # 0. Per-client rate limit: avoid sending too many requests at once to Deezer,
