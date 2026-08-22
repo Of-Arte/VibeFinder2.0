@@ -51,7 +51,7 @@ def test_server_deezer_outage_returns_503(monkeypatch):
     monkeypatch.setattr(deezer_client, "fetch_tracks", mock_fetch_tracks)
 
     response = client.post(
-        "/api/recommend",
+        "/api/recommendations",
         json={"user_name": "Test User", "selected_artists": ["Taylor Swift"]}
     )
     assert response.status_code == 503

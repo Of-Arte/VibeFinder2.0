@@ -1,6 +1,6 @@
 # VibeFinder Product & Engineering Roadmap
 
-This roadmap outlines the counted iterations and release plan leading from **VibeFinder 2.0** to **VibeFinder 3.0**.
+This roadmap outlines the planned iterations and release plan leading from **VibeFinder 2.0** to **VibeFinder 3.0**.
 
 ---
 
@@ -11,8 +11,8 @@ This roadmap outlines the counted iterations and release plan leading from **Vib
 | **Iteration 1** | `v2.0.0` | **Completed** | Full-Stack Web Init (FastAPI + React UI + Agentic DJ Scaffold) |
 | **Iteration 2** | `v2.1.0` | **Completed** | Deezer API pool, Weighted Scoring, Gemini Resilience & System Evaluation |
 | **Iteration 3** | `v2.2.0` | **Next Up** | Session Persistence, History Logging & Spotify/Apple Music Sync |
-| **Iteration 4** | `v2.3.0` | Planned | Real-Time Audio Visualizer & Customizable DJ Personas |
-| **Major 3.0** | `v3.0.0` | **Target Vision** | Real-Time Neural Voice Audio DJ, Voice Commands & Autonomous Radio Agent |
+| **Iteration 4** | `v2.3.0` | Planned | Full Audio Playback & TTS Integration |
+| **Major 3.0** | `v3.0.0` | **Target Vision** | Real-Time Personalized DJ & Autonomous Radio Agent |
 
 ---
 
@@ -20,7 +20,7 @@ This roadmap outlines the counted iterations and release plan leading from **Vib
 
 ### Iteration 1 — `v2.0.0`: Full-Stack Web Initialization (Completed)
 - [x] **React + Vite Frontend**: Initial artist selection onboarding grid, responsive dark UI, preview player scaffold.
-- [x] **FastAPI Backend Server**: Initial API structure (`POST /api/recommend`, `GET /api/health`).
+- [x] **FastAPI Backend Server**: Initial API structure (`POST /api/recommendations` returning `201 Created`, `GET /api/health`).
 - [x] **Agentic Pipeline Scaffold**: Basic multi-agent orchestration for vibe translation and DJ intros.
 
 ---
@@ -43,24 +43,24 @@ This roadmap outlines the counted iterations and release plan leading from **Vib
 
 ---
 
-### Iteration 4 — `v2.3.0`: Interactive DJ Personas & Audio Visuals
-- [ ] **Audio Feature Visualizer**:
-  - Real-time audio playback for each track.
-- [ ] **Seamless Crossfading**:
-  - Smooth Web Audio API gain node crossfading between audio previews.
+### Iteration 4 — `v2.3.0`: TTS Integration & Audio Playback
+- [ ] **Web Audio API audio player**:
+  - Real-time audio playback for each track using YouTube Music API.
+- [ ] **Text-to-speech integration**:
+  - Live TTS narration for the radio DJ with crossfading between songs.
 
 ---
 
 ## VibeFinder 3.0 — `v3.0.0`: The Autonomous Interactive Voice DJ
 
-**Goal**: Transform VibeFinder from a web playlist generator into a live, voice-interactive AI radio station.
+**Goal**: Transform VibeFinder from a web playlist generator into a live, autonomous AI radio station.
 
 ### Key Pillars of 3.0:
 1. **Streaming Audio Voice DJ**:
-   - High-fidelity neural voice synthesis (Gemini Multimodal Live / ElevenLabs integration) delivering spoken transitions between tracks in real time over Web Audio.
-2. **Real-time Voice Interaction**:
-   - Hands-free mic input ("*Hey DJ, tone down the energy for a bit*") triggering instant live playlist re-alignment.
-3. **Multi-Modal Context Awareness**:
-   - Integration with ambient context (time of day, weather API, calendar state) to autonomously infer current listener vibe without manual artist selection.
-4. **Autonomous Multi-Agent Radio Station**:
-   - Specialized background sub-agents providing track trivia, artist backstories, and contextual banter between songs.
+   - Real-time Text-to-Speech (Gemini Multimodal Live / ElevenLabs integration) delivering spoken transitions between songs.
+2. **Multi-Modal Context Awareness**:
+   - Integration with ambient context (time of day, weather API, calendar state) to autonomously infer current listener vibe.
+3. **User Feedback Loop**:
+   - Real-time feedback mechanism for users to adjust the playlist based on their preferences.
+4. **Social Connectivity**:
+   - Integration with social media platforms to share playlists and recommendations with friends.

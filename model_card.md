@@ -82,7 +82,7 @@
 
 ## Recommendation Algorithm & Proximity Logic
 
-The system utilizes a hybrid approach: specialized LLM agents extract music preference targets and song attributes, which are then fed into a deterministic mathematical scoring engine to rank recommendations.
+The system utilizes a hybrid approach: specialized agents extract music preference targets and song attributes, which are then fed into a deterministic mathematical scoring engine to rank recommendations.
 
 ### Proximity Scoring Formula
 For continuous features, the proximity score is computed by normalizing the absolute difference between the target preference and the song's actual value. The unit_scale is set to 60.0 BPM to normalize the difference over a reasonable BPM window.
@@ -101,15 +101,24 @@ The final score of a track is the sum of all weighted matching components:
 | **Acousticness Proximity** | 1.5 | Proximity score based on target acousticness |
 | **Tempo Proximity** | 1.0 | Proximity score based on target tempo (normalized over 60.0 BPM) |
 | **Valence Bonus** | 0.5 | Upbeat valence bonus if target mood is "happy" and song valence $\ge 0.7$ |
-
-### Categorical vs. Continuous Features
-Continuous features do the primary ranking, while matches on categorical features (genre, mood) are designed to guide the broader direction and break ranking ties.
-
 ---
 
 ## Model Evaluation & Performance
 
-To ensure the recommendation system is accurate and fast, we run an evaluation script (evaluate.py) across **7 test profiles**  against a controlled pool of songs.
+To ensure the recommendation system is accurate and fast, we run an evaluation script across 7 test profiles against a controlled pool of songs.
+
+### What “vibe alignment” means
+The alignment metric is a 0‑to‑1 score that captures how closely a generated playlist matches the user's target taste profile. It is computed by aggregating weighted proximity scores for both categorical features (genre, mood) and continuous audio attributes (energy, valence, danceability, acousticness, tempo). Higher scores indicate a tighter match to the user's preferences.
+
+### How `calculate_vibe_alignment` works
+In `evaluate.py`, the function receives the target vibe dictionary and the playlist returned by the API. For each track it:
+1. Calculates feature proximity.
+2. Sums the weighted proximities for continuous features.
+3. Adds categorical bonuses for exact genre/mood matches.
+4. Normalizes the total to a value between 0 and 1.
+The resulting scores are then averaged to produce the scenario’s overall vibe_alignment.
+
+The evaluation script runs the vibe alignment calculations for each of the 7 mock scenarios and sums the vibe_alignment values. It divides the total by the number of scenarios, rounding to four decimal places. This final figure is recorded as `mean_vibe_alignment` (e.g., 0.8571 ≈ 86%).
 
 Here is a summary of the model's performance:
 
@@ -140,6 +149,6 @@ Here is a summary of the model's performance:
 ### Surprises
 I was surprised how consistently the energy levels matched my expectations for the artists selected. Even though the model does not have access to audio features, it was able to predict the energy level of the songs based on the artist and song name alone. To maintain reliability, I used a curated list of 16 popular artists to choose from, and also limited the LLM output using JSON schema and strict validation. 
 
-### AI Collaboration
+## AI Collaboration
 - **Helpful Suggestion**: When designing the system architecture, AI suggested using APIs like Deezer or Spotify to fetch songs and also suggested using Gemini Flash for classification. This was a good suggestion as it helped me create a broader system outside the limitations of the initial csv file.
-- **Flawed Suggestion**: Initially, the AI suggested fetching songs from Spotify's recommendation endpoint, which required user authentication. It failed to account for the lack of access to that specific endpoint causing a roadblock in the planning stage. This led me to using Deezer API which does not require user authentication but lacked the ability to fetch songs based on metadata like energy and valence. Additionally, the AI suggested using Gemini Flash for classification task which was a good suggestion, but it failed to account for the lack of access to the specific gemini-2.5-flash-lite model.
+- **Flawed Suggestion**: Initially, the AI suggested fetching songs from Spotify's recommendation endpoint, which required user authentication. It failed to account for the lack of access to that specific endpoint causing a roadblock in the planning stage. This led me to using the Deezer API which does not require user authentication but lacked the ability to fetch songs based on metadata like energy and valence. Additionally, the AI suggested using Gemini Flash for the classification task which was a good suggestion, but it failed to account for the lack of access to the specific gemini-2.5-flash-lite model.

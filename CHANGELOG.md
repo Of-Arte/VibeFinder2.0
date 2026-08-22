@@ -12,6 +12,18 @@ All notable changes to the **VibeFinder** project will be documented in this fil
 
 ---
 
+## [2.1.1] - RESTful Resource Alignment (2026-08-19)
+
+### Changed
+- **RESTful Endpoint Refactor (`backend/server.py`)**:
+  - Replaced RPC verb endpoint `POST /api/recommend` (`200 OK`) with RESTful resource creation endpoint `POST /api/recommendations` returning `201 Created`.
+- **Frontend Integration (`frontend/src/api.js`)**:
+  - Updated API client to call `/api/recommendations`.
+- **Test Suite & Documentation**:
+  - Updated server integration/resilience tests and `README.md` to target `/api/recommendations` and assert HTTP 201 status code.
+
+---
+
 ## [2.1.0] - Keyless Deezer API, Agent Evals & Weighted Scoring (2026-08-06)
 
 ### Added

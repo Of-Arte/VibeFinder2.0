@@ -14,7 +14,7 @@
 export async function fetchRecommendations(userName, selectedArtists) {
   let response
   try {
-    response = await fetch('/api/recommend', {
+    response = await fetch('/api/recommendations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
