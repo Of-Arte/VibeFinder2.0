@@ -13,7 +13,7 @@
 
 ## Architecture Overview
 
-The system runs 3 distinct LLM agents wrapped around a deterministic mathematical scoring engine.
+The system runs 3 distinct agents wrapped around a deterministic mathematical scoring engine.
 
 ![Architecture: The Agentic Workflow](assets/slides/architecture_workflow.png)
 
